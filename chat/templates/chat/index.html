@@ -1,0 +1,50 @@
+{% extends 'chat/base.html' %}
+{% load static %}
+
+{% block content %}
+<header class="uaemex-header">
+    <div class="container">
+        <img src="{% static 'img/logo-uaemex.png' %}" alt="Logo UAEMEX" class="logo">
+        <h1>Universidad Autónoma del Estado de México</h1>
+    </div>
+</header>
+
+<main class="chat-container">
+    <div class="chat-header">
+        <h2>Asistente Virtual</h2>
+        <p>Pregúntame sobre la UAEMEX</p>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+        <div class="message bot">
+            <div class="message-content">
+                ¡Hola! Soy el asistente virtual de la UAEMEX. 
+                ¿En qué puedo ayudarte hoy?
+            </div>
+        </div>
+    </div>
+    
+    <div class="chat-input-area">
+        <textarea 
+            id="userInput" 
+            placeholder="Escribe tu pregunta aquí..." 
+            rows="2"
+        ></textarea>
+        <button id="sendButton" class="btn-uaemex">
+            Enviar
+        </button>
+    </div>
+</main>
+
+<footer class="uaemex-footer">
+    <div class="container">
+        <p>© 2024 Universidad Autónoma del Estado de México</p>
+        <p>Toluca, Estado de México</p>
+    </div>
+</footer>
+
+<script>
+    // Pasar session_id al JavaScript
+    const SESSION_ID = '{{ session_id }}';
+</script>
+{% endblock %}
