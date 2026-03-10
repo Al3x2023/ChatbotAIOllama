@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'uaemex_chatbot',
         'USER': 'root',
-        'PASSWORD': 'tu_contraseña',  # Tu contraseña de MySQL
+        'PASSWORD': '@@@TheScar1997@@@',  # Tu contraseña de MySQL
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -134,7 +134,10 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 OLLAMA_URL = os.getenv('OLLAMA_URL', 'http://localhost:11434')
-MODEL_NAME = os.getenv('MODEL_NAME', 'uaemex-llama3.2:latest')
+MODEL_NAME = os.getenv('MODEL_NAME', 'llama3.2:latest')
 BASE_MODEL = os.getenv('BASE_MODEL', 'llama3.2:latest')
 UAEMEX_BASE_URL = os.getenv('UAEMEX_BASE_URL', 'https://www.uaemex.mx/')
 UAEMEX_PDF_URLS = os.getenv('UAEMEX_PDF_URLS', '').split(',')
+
+# Para corregir las advertencias de primary key
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

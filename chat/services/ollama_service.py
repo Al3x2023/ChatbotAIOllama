@@ -5,7 +5,7 @@ from django.conf import settings
 class OllamaService:
     def __init__(self):
         self.base_url = settings.OLLAMA_URL
-        self.model = settings.MODEL_NAME
+        self.model = 'llama3.2:latest'  
         self.base_model = settings.BASE_MODEL
     
     def consultar(self, mensaje, contexto=""):
