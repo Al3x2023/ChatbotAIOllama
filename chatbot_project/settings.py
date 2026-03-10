@@ -141,3 +141,16 @@ UAEMEX_PDF_URLS = os.getenv('UAEMEX_PDF_URLS', '').split(',')
 
 # Para corregir las advertencias de primary key
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Al final de settings.py, agrega:
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'ollama-cache',
+        'TIMEOUT': 60 * 15,  # 15 minutos
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+            'CULL_FREQUENCY': 3,
+        }
+    }
+}

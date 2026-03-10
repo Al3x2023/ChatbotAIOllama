@@ -15,8 +15,8 @@ def index(request):
     if not request.session.session_key:
         request.session.create()
     
-    # Verificar estado de Ollama
-    ollama_ok = ollama_service.verificar_estado()
+    # Verificar estado de Ollama (usando el método rápido)
+    ollama_ok = ollama_service.verificar_estado_rapido()
     
     context = {
         'session_id': request.session.session_key,
@@ -28,60 +28,43 @@ def index(request):
 @csrf_exempt
 @require_POST
 def chat_api(request):
-    """API para procesar mensajes con Llama 3.2"""
     try:
         data = json.loads(request.body)
         mensaje = data.get('mensaje', '')
         session_id = data.get('session_id', request.session.session_key)
         
-        print(f"Mensaje recibido: {mensaje}")  # LOG
-        print(f"Session ID: {session_id}")     # LOG
+        # Obtener historial de la sesión
+        historial = Conversacion.objects.filter(session_id=session_id)[:5]
+        historial_list = [{'pregunta': h.pregunta, 'respuesta': h.respuesta} 
+                         for h in historial]
         
         # Buscar contexto relevante en la BD
         contexto = buscar_contexto_relevante(mensaje)
-        print(f"Contexto encontrado: {bool(contexto)}")  # LOG
         
-        # Consultar a Llama 3.2
-        print("Consultando a Ollama...")  # LOG
-        respuesta = ollama_service.consultar(mensaje, contexto)
-        print(f"Respuesta de Ollama: {respuesta[:50]}...")  # LOG
+        # Usar la función con historial (pasa el contexto también)
+        respuesta = ollama_service.consultar_con_historial(mensaje, historial_list, contexto)
         
         # Guardar conversación
-        try:
-            conversacion = Conversacion.objects.create(
-                session_id=session_id,
-                pregunta=mensaje,
-                respuesta=respuesta
-            )
-            print(f"Conversación guardada: {conversacion.id}")  # LOG
-        except Exception as e:
-            print(f"Error guardando en BD: {e}")  # LOG
+        Conversacion.objects.create(
+            session_id=session_id,
+            pregunta=mensaje,
+            respuesta=respuesta
+        )
         
-        return JsonResponse({
-            'respuesta': respuesta,
-            'session_id': session_id,
-            'contexto_usado': bool(contexto)
-        })
-        
+        return JsonResponse({'respuesta': respuesta})
     except Exception as e:
-        print(f"ERROR en chat_api: {e}")  # LOG
-        import traceback
-        traceback.print_exc()  # LOG detallado
-        return JsonResponse({
-            'error': str(e),
-            'respuesta': f'Error: {str(e)}'
-        }, status=500)
+        print(f"Error en chat_api: {e}")
+        return JsonResponse({'respuesta': 'Error interno del servidor'}, status=500)
+
 def buscar_contexto_relevante(mensaje, limite=3):
     """
     Busca información relevante en la BD para dar contexto a la IA
     """
-    # Palabras clave simples (mejorable)
     palabras = mensaje.lower().split()
-    
     contextos = []
     
-    for palabra in palabras[:5]:  # Solo primeras 5 palabras
-        if len(palabra) < 4:  # Ignorar palabras muy cortas
+    for palabra in palabras[:5]:
+        if len(palabra) < 4:
             continue
             
         conocimientos = ConocimientoUAEMEX.objects.filter(
@@ -109,7 +92,7 @@ def historial_api(request):
 
 def estado_api(request):
     """API para verificar el estado del sistema"""
-    ollama_ok = ollama_service.verificar_estado()
+    ollama_ok = ollama_service.verificar_estado_rapido()
     modelos = ollama_service.listar_modelos()
     
     return JsonResponse({
