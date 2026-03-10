@@ -34,18 +34,28 @@ def chat_api(request):
         mensaje = data.get('mensaje', '')
         session_id = data.get('session_id', request.session.session_key)
         
+        print(f"Mensaje recibido: {mensaje}")  # LOG
+        print(f"Session ID: {session_id}")     # LOG
+        
         # Buscar contexto relevante en la BD
         contexto = buscar_contexto_relevante(mensaje)
+        print(f"Contexto encontrado: {bool(contexto)}")  # LOG
         
         # Consultar a Llama 3.2
+        print("Consultando a Ollama...")  # LOG
         respuesta = ollama_service.consultar(mensaje, contexto)
+        print(f"Respuesta de Ollama: {respuesta[:50]}...")  # LOG
         
         # Guardar conversación
-        Conversacion.objects.create(
-            session_id=session_id,
-            pregunta=mensaje,
-            respuesta=respuesta
-        )
+        try:
+            conversacion = Conversacion.objects.create(
+                session_id=session_id,
+                pregunta=mensaje,
+                respuesta=respuesta
+            )
+            print(f"Conversación guardada: {conversacion.id}")  # LOG
+        except Exception as e:
+            print(f"Error guardando en BD: {e}")  # LOG
         
         return JsonResponse({
             'respuesta': respuesta,
@@ -54,11 +64,13 @@ def chat_api(request):
         })
         
     except Exception as e:
+        print(f"ERROR en chat_api: {e}")  # LOG
+        import traceback
+        traceback.print_exc()  # LOG detallado
         return JsonResponse({
             'error': str(e),
-            'respuesta': 'Lo siento, ocurrió un error al procesar tu mensaje.'
+            'respuesta': f'Error: {str(e)}'
         }, status=500)
-
 def buscar_contexto_relevante(mensaje, limite=3):
     """
     Busca información relevante en la BD para dar contexto a la IA
