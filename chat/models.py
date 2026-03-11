@@ -19,7 +19,7 @@ class ConocimientoUAEMEX(models.Model):
     """Modelo para almacenar información de la UAEMEX (scraping)"""
     titulo = models.CharField(max_length=200)
     contenido = models.TextField()
-    fuente = models.CharField(max_length=200, blank=True)  # URL o documento
+    fuente = models.CharField(max_length=200, blank=True, unique=True)  # URL o documento
     tipo = models.CharField(max_length=50, choices=[
         ('facultad', 'Facultad'),
         ('carrera', 'Carrera'),
