@@ -48,6 +48,8 @@ class DocumentoPDF(models.Model):
     contenido_texto = models.TextField(blank=True)
     fecha_descarga = models.DateTimeField(auto_now_add=True)
     procesado = models.BooleanField(default=False)
+    # NUEVO CAMPO
+    hash_contenido = models.CharField(max_length=64, blank=True, help_text="MD5 del contenido del PDF para detectar cambios")
     
     class Meta:
         db_table = 'documentos_pdf'

@@ -17,7 +17,7 @@ class ModelUpdater:
         Combina todo el conocimiento de la BD para crear el contexto,
         limitando la cantidad y limpiando caracteres problemáticos.
         """
-        conocimientos = ConocimientoUAEMEX.objects.all()[:50]
+        conocimientos = ConocimientoUAEMEX.objects.all()[:5]
 
         if not conocimientos:
             return "Información de la UAEMEX no disponible."
