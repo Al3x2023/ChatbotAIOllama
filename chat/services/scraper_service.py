@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ScraperUAEMEX:
-    def __init__(self):
+    def __init__(self, urls_extra=None):
         self.base_url = settings.UAEMEX_BASE_URL
         self.visited_urls = set()
         self.max_pages = 30

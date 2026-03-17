@@ -11,7 +11,7 @@ class OllamaService:
         self.model = 'llama3.2:latest'  # Modelo personalizado
         self.base_model = settings.BASE_MODEL
         self.cache_timeout = 60 * 15  # 15 minutos
-        self.timeout = 30  # Timeout reducido para respuestas más rápidas
+        self.timeout = 1000  # Timeout reducido para respuestas más rápidas
 
     def consultar(self, mensaje, contexto="", session_id=None):
         """
