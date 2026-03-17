@@ -1,3 +1,4 @@
+# chat/management/commands/procesar_pdfs.py
 from django.core.management.base import BaseCommand
 from chat.services.pdf_service import PDFService
 

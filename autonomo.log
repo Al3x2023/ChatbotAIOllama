@@ -1,0 +1,39 @@
+2026-03-11 19:37:57,887 - INFO - \U0001f680 Iniciando ciclo de automejora
+2026-03-11 19:37:57,914 - ERROR - \u274c Error en scraper: can't subtract offset-naive and offset-aware datetimes
+2026-03-11 19:37:57,916 - INFO - \U0001f4c4 Procesando PDFs...
+2026-03-11 19:37:57,916 - ERROR - \u274c Error en PDFs: Unknown command: 'procesar_pdfs'
+2026-03-11 19:37:57,916 - INFO - \u23f3 Sin cambios significativos, no se actualiza modelo
+2026-03-11 19:37:57,916 - INFO - \u2705 Ciclo completado
+
+2026-03-11 19:38:05,944 - INFO - \U0001f680 Iniciando ciclo de automejora
+2026-03-11 19:38:05,946 - ERROR - \u274c Error en scraper: can't subtract offset-naive and offset-aware datetimes
+2026-03-11 19:38:05,947 - INFO - \U0001f4c4 Procesando PDFs...
+2026-03-11 19:38:05,947 - ERROR - \u274c Error en PDFs: Unknown command: 'procesar_pdfs'
+2026-03-11 19:38:05,947 - INFO - \u23f3 Sin cambios significativos, no se actualiza modelo
+2026-03-11 19:38:05,947 - INFO - \u2705 Ciclo completado
+
+2026-03-11 19:39:09,776 - INFO - \U0001f680 Iniciando ciclo de automejora
+2026-03-11 19:39:09,788 - ERROR - \u274c Error en scraper: can't subtract offset-naive and offset-aware datetimes
+2026-03-11 19:39:09,789 - INFO - \U0001f4c4 Procesando PDFs...
+2026-03-11 19:39:09,789 - ERROR - \u274c Error en PDFs: Unknown command: 'procesar_pdfs'
+2026-03-11 19:39:09,789 - INFO - \u23f3 Sin cambios significativos, no se actualiza modelo
+2026-03-11 19:39:09,789 - INFO - \u2705 Ciclo completado
+
+2026-03-11 19:46:21,896 - INFO - \U0001f680 Iniciando ciclo de automejora
+2026-03-11 19:46:21,909 - INFO - \u23f3 Último scrapeo hace 5:37:27.551619, esperando...
+2026-03-11 19:46:21,911 - INFO - \U0001f4c4 Procesando PDFs...
+2026-03-11 19:46:21,911 - ERROR - \u274c Error en PDFs: Unknown command: 'procesar_pdfs'
+2026-03-11 19:46:21,911 - INFO - \u23f3 Sin cambios significativos, no se actualiza modelo
+2026-03-11 19:46:21,911 - INFO - \u2705 Ciclo completado
+
+2026-03-12 19:21:59,930 - INFO - \U0001f680 Iniciando ciclo de automejora
+2026-03-12 19:21:59,944 - INFO - \u23f3 Último scrapeo hace 0:00:52.672757, esperando...
+2026-03-12 19:21:59,981 - INFO - \U0001f4c4 Procesando PDFs...
+2026-03-12 19:22:00,143 - INFO - Procesando PDF: https://www.uaemex.mx/reglamento.pdf
+2026-03-12 19:22:00,625 - ERROR - Error procesando PDF https://www.uaemex.mx/reglamento.pdf: HTTP 404
+2026-03-12 19:22:00,625 - INFO - Procesando PDF: https://www.uaemex.mx/oferta-educativa.pdf
+2026-03-12 19:22:01,084 - ERROR - Error procesando PDF https://www.uaemex.mx/oferta-educativa.pdf: HTTP 404
+2026-03-12 19:22:01,084 - INFO - \U0001f504 Cambios detectados, actualizando modelo...
+2026-03-12 19:22:01,220 - INFO - \u2705 Modelo actualizado: Modelo uaemex-llama3.2:latest actualizado
+2026-03-12 19:22:01,220 - INFO - \u2705 Ciclo completado
+

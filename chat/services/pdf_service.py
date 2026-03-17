@@ -1,110 +1,130 @@
+import os
+import hashlib
+import logging
 import requests
 import PyPDF2
-import io
+import pdfplumber  # opcional
+from io import BytesIO
 from chat.models import DocumentoPDF, ConocimientoUAEMEX
 from django.core.files.base import ContentFile
 from django.conf import settings
-import os
+from tenacity import retry, stop_after_attempt, wait_fixed
+
+logger = logging.getLogger(__name__)
 
 class PDFService:
-    def __init__(self):
-        self.pdf_urls = settings.UAEMEX_PDF_URLS
-    
+    def __init__(self, urls=None):
+        self.pdf_urls = urls or settings.UAEMEX_PDF_URLS
+
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+    def _descargar(self, url):
+        return requests.get(url, timeout=30)
+
     def descargar_y_procesar_pdfs(self):
-        """
-        Descarga PDFs desde las URLs configuradas
-        """
         resultados = []
-        
         for url in self.pdf_urls:
-            if not url:  # Saltar URLs vacías
+            if not url:
                 continue
-                
-            print(f"Procesando PDF: {url}")
-            
+            logger.info(f"Procesando PDF: {url}")
             try:
-                # Verificar si ya existe
+                response = self._descargar(url)
+                if response.status_code != 200:
+                    raise Exception(f"HTTP {response.status_code}")
+
+                # Calcular hash del contenido
+                contenido = response.content
+                hash_actual = hashlib.md5(contenido).hexdigest()
+
+                # Verificar si ya existe y si ha cambiado
                 pdf_existente = DocumentoPDF.objects.filter(url_origen=url).first()
-                
-                if pdf_existente and pdf_existente.procesado:
-                    print(f"  → PDF ya procesado anteriormente")
-                    continue
-                
-                # Descargar PDF
-                response = requests.get(url, timeout=30)
-                
-                if response.status_code == 200:
-                    # Extraer texto
-                    texto = self._extraer_texto_pdf(response.content)
-                    
-                    # Obtener nombre del archivo
-                    nombre_archivo = os.path.basename(url)
-                    if not nombre_archivo.endswith('.pdf'):
-                        nombre_archivo = f"documento_{len(resultados)}.pdf"
-                    
-                    # Guardar o actualizar en BD
-                    pdf, creado = DocumentoPDF.objects.update_or_create(
-                        url_origen=url,
-                        defaults={
-                            'nombre': nombre_archivo,
-                            'contenido_texto': texto[:10000],  # Limitar tamaño
-                            'procesado': True
-                        }
-                    )
-                    
-                    # Guardar archivo físico
-                    if not pdf.archivo:
-                        pdf.archivo.save(
-                            nombre_archivo,
-                            ContentFile(response.content),
-                            save=True
-                        )
-                    
-                    # También guardar como conocimiento
-                    if texto:
-                        ConocimientoUAEMEX.objects.update_or_create(
-                            fuente=url,
-                            defaults={
-                                'titulo': f"PDF: {nombre_archivo}",
-                                'contenido': texto[:5000],
-                                'tipo': 'reglamento' if 'reglamento' in url.lower() else 'general'
-                            }
-                        )
-                    
+                if pdf_existente and pdf_existente.hash_contenido == hash_actual:
+                    logger.info(f"  → PDF sin cambios, omitiendo")
+                    # Aún así, agregamos al resultado para que el comando sepa que se procesó (sin cambios)
                     resultados.append({
                         'url': url,
-                        'nombre': nombre_archivo,
-                        'creado': creado,
-                        'tamaño': len(texto)
+                        'nombre': pdf_existente.nombre,
+                        'cambio': False,
+                        'tamaño': len(pdf_existente.contenido_texto) if pdf_existente.contenido_texto else 0
                     })
-                    
-                    print(f"  → Texto extraído: {len(texto)} caracteres")
-                    
-            except Exception as e:
-                print(f"Error procesando PDF {url}: {str(e)}")
+                    continue
+
+                # Extraer texto (con fallback)
+                texto = self._extraer_texto_seguro(contenido)
+
+                # Guardar
+                nombre_archivo = os.path.basename(url) or f"pdf_{len(resultados)}.pdf"
+                pdf, creado = DocumentoPDF.objects.update_or_create(
+                    url_origen=url,
+                    defaults={
+                        'nombre': nombre_archivo,
+                        'contenido_texto': texto[:10000],
+                        'hash_contenido': hash_actual,
+                        'procesado': True
+                    }
+                )
+                if not pdf.archivo:
+                    pdf.archivo.save(nombre_archivo, ContentFile(contenido), save=True)
+
+                # Guardar en conocimiento
+                if texto:
+                    tipo = self._determinar_tipo(url, texto)
+                    ConocimientoUAEMEX.objects.update_or_create(
+                        fuente=url,
+                        defaults={
+                            'titulo': f"PDF: {nombre_archivo}",
+                            'contenido': texto[:5000],
+                            'tipo': tipo
+                        }
+                    )
+
                 resultados.append({
                     'url': url,
-                    'error': str(e)
+                    'nombre': nombre_archivo,
+                    'cambio': not pdf_existente,
+                    'tamaño': len(texto)   # <--- AÑADIDO
                 })
-        
+                logger.info(f"  → Texto extraído: {len(texto)} caracteres")
+
+            except Exception as e:
+                logger.error(f"Error procesando PDF {url}: {e}")
+                resultados.append({'url': url, 'error': str(e)})
+
         return resultados
-    
-    def _extraer_texto_pdf(self, contenido_binario):
-        """
-        Extrae texto de un archivo PDF
-        """
-        texto = ""
-        
+
+    def _extraer_texto_seguro(self, contenido):
+        # Intenta con PyPDF2, si falla con pdfplumber
         try:
-            with io.BytesIO(contenido_binario) as archivo_pdf:
-                lector = PyPDF2.PdfReader(archivo_pdf)
-                
-                for pagina in lector.pages:
-                    texto_pagina = pagina.extract_text()
-                    if texto_pagina:
-                        texto += texto_pagina + "\n"
-                        
-        except Exception as e:
-            print(f"Error extrayendo texto: {str(e)}")
-        
-        return ' '.join(texto.split())[:20000]  # Limpiar y limitar
+            return self._extraer_texto_pypdf2(contenido)
+        except:
+            try:
+                return self._extraer_texto_pdfplumber(contenido)
+            except:
+                return ""
+
+    def _extraer_texto_pypdf2(self, contenido):
+        texto = ""
+        with BytesIO(contenido) as f:
+            reader = PyPDF2.PdfReader(f)
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    texto += page_text + "\n"
+        return ' '.join(texto.split())[:20000]
+
+    def _extraer_texto_pdfplumber(self, contenido):
+        texto = ""
+        with BytesIO(contenido) as f:
+            with pdfplumber.open(f) as pdf:
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        texto += page_text + "\n"
+        return ' '.join(texto.split())[:20000]
+
+    def _determinar_tipo(self, url, texto):
+        texto_completo = (url + " " + texto).lower()
+        if 'reglamento' in texto_completo or 'normatividad' in texto_completo:
+            return 'reglamento'
+        if 'plan de estudios' in texto_completo or 'programa' in texto_completo:
+            return 'academico'
+        return 'general'
