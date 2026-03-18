@@ -77,6 +77,7 @@ Variables relevantes del deploy:
 - `RUN_DEPLOY_CHECK`, `RUN_PIPELINE`, `PIPELINE_MAX_PAGES`
 - `PIPELINE_HTML_BATCH`, `PIPELINE_PDF_BATCH`
 - `PIPELINE_HTML_FILE`, `PIPELINE_PDF_FILE`
+- `PIPELINE_SKIP_PDFS`, `PIPELINE_EXTRA_ARGS`
 - `BACKUP_BEFORE_DEPLOY`, `BACKUP_DIR`
 - `RUN_HEALTHCHECK`, `HEALTHCHECK_URL`
 
@@ -90,12 +91,19 @@ Instalación automática de servicio web + timer del pipeline:
 
 ```bash
 chmod +x scripts/instalar_systemd_vps.sh
-APP_DIR=/var/www/ChatbotAIOllama \
-APP_USER=www-data \
-APP_GROUP=www-data \
+APP_DIR=/root/ChatbotAIOllama \
+APP_USER=root \
+APP_GROUP=root \
+PYTHON_BIN=/root/ChatbotAIOllama/venv/bin/python \
+GUNICORN_BIN=/root/ChatbotAIOllama/venv/bin/gunicorn \
 SERVICE_NAME=chatbot \
 PORT=8000 \
 PIPELINE_SCHEDULE="*:0/30" \
+PIPELINE_HTML_BATCH=100 \
+PIPELINE_PDF_BATCH=50 \
+PIPELINE_HTML_FILE="clasificadas/html.txt" \
+PIPELINE_PDF_FILE="clasificadas/pdfs_interesantes.txt" \
+PIPELINE_SKIP_PDFS=true \
 ALLOWED_HOSTS="187.77.29.135,localhost,127.0.0.1" \
 ./scripts/instalar_systemd_vps.sh
 ```
@@ -154,3 +162,15 @@ Comportamiento para cronjob:
 
 - Si no hay cambios reales en contenido, el pipeline no actualiza modelo.
 - Para detectar cambios, compara conteos y última `fecha_actualizacion` de conocimiento.
+- En VPS pequeño, conviene correr timer con `PIPELINE_SKIP_PDFS=true` y procesar PDFs en lotes manuales.
+
+Comandos de recuperación rápida en VPS:
+
+```bash
+systemctl daemon-reload
+systemctl restart chatbot
+systemctl status chatbot --no-pager
+systemctl restart chatbot_pipeline.timer
+systemctl status chatbot_pipeline.timer --no-pager
+curl http://127.0.0.1:8000/api/health/
+```
