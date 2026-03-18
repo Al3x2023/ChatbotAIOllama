@@ -14,20 +14,23 @@ logger = logging.getLogger(__name__)
 class ScraperUAEMEX:
     def __init__(self, urls_extra=None):
         self.base_url = settings.UAEMEX_BASE_URL
+        self.urls_extra = [u for u in (urls_extra or []) if u]
         self.visited_urls = set()
-        self.max_pages = 30
+        self.max_pages = settings.SCRAPER_MAX_PAGES
         self.palabras_clave = [
             'licenciatura', 'carrera', 'oferta-educativa', 'facultad',
-            'admision', 'inscripcion', 'becas', 'contacto', 'historia',
+            'admision', 'admisión', 'inscripcion', 'inscripción', 'becas', 'contacto', 'historia',
             'mision', 'vision', 'calendario', 'convocatorias', 'programa',
-            'plan de estudios', 'requisitos', 'perfil de ingreso'
+            'plan de estudios', 'requisitos', 'perfil de ingreso', 'nuevoingreso',
+            'preinscripcion', 'preinscripción', 'examen', 'derechos'
         ]
         self.extensiones_ignorar = ('.pdf', '.jpg', '.jpeg', '.png', '.gif', 
                                      '.mp4', '.avi', '.mov', '.zip', '.rar')
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
-        self.timeout = 5  # Timeout reducido a 5 segundos
+        self.timeout = settings.SCRAPER_TIMEOUT_SECONDS
+        self.max_links_per_page = settings.SCRAPER_MAX_LINKS_PER_PAGE
 
     def scrapear_sitio(self):
         """
@@ -35,7 +38,10 @@ class ScraperUAEMEX:
         """
         print(f"🚀 Iniciando scraping ultrarrápido de {self.base_url}")
         resultados = []
-        urls_por_visitar = [self.base_url]
+        urls_por_visitar = []
+        for url in [self.base_url, *getattr(settings, 'UAEMEX_SEED_URLS', []), *self.urls_extra]:
+            if url and url not in urls_por_visitar:
+                urls_por_visitar.append(url)
         
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = []
@@ -91,16 +97,23 @@ class ScraperUAEMEX:
                 info = self._extraer_informacion_rapida(soup, url)
                 
                 if info['contenido'] and len(info['contenido']) > 200:
-                    conocimiento, creado = ConocimientoUAEMEX.objects.update_or_create(
-                        fuente=url,
-                        defaults={
-                            'titulo': info['titulo'],
-                            'contenido': info['contenido'][:5000],
-                            'tipo': self._determinar_tipo(url, info['titulo'])
-                        }
-                    )
-                    resultado = {'url': url, 'titulo': info['titulo'], 'creado': creado}
-                    print(f"    ✅ Guardado: {info['titulo'][:50]}...")
+                    titulo_nuevo = info['titulo']
+                    contenido_nuevo = info['contenido'][:5000]
+                    tipo_nuevo = self._determinar_tipo(url, info['titulo'])
+                    existente = ConocimientoUAEMEX.objects.filter(fuente=url).first()
+                    if existente and existente.titulo == titulo_nuevo and existente.contenido == contenido_nuevo and existente.tipo == tipo_nuevo:
+                        resultado = {'url': url, 'titulo': info['titulo'], 'creado': False, 'actualizado': False}
+                    else:
+                        conocimiento, creado = ConocimientoUAEMEX.objects.update_or_create(
+                            fuente=url,
+                            defaults={
+                                'titulo': titulo_nuevo,
+                                'contenido': contenido_nuevo,
+                                'tipo': tipo_nuevo
+                            }
+                        )
+                        resultado = {'url': url, 'titulo': info['titulo'], 'creado': creado, 'actualizado': not creado}
+                        print(f"    ✅ Guardado: {info['titulo'][:50]}...")
                 
                 # Extraer enlaces
                 nuevos_enlaces = self._extraer_enlaces_rapidos(soup, url)
@@ -150,7 +163,7 @@ class ScraperUAEMEX:
         enlaces = []
         dominio_base = urlparse(self.base_url).netloc
         
-        for link in soup.find_all('a', href=True)[:20]:  # Limitar a 20 enlaces por página
+        for link in soup.find_all('a', href=True)[:self.max_links_per_page]:
             href = link['href']
             url_completa = urljoin(url_actual, href)
             dominio_link = urlparse(url_completa).netloc
@@ -165,7 +178,7 @@ class ScraperUAEMEX:
                 else:
                     enlaces.append(url_completa)
         
-        return enlaces[:10]  # Máximo 10 enlaces por página
+        return enlaces[:max(20, self.max_links_per_page // 2)]
 
     def _determinar_tipo(self, url, titulo):
         texto = (url + " " + titulo).lower()

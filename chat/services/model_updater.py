@@ -3,6 +3,7 @@ import tempfile
 import os
 import re
 from django.conf import settings
+from django.db.models import Q
 from chat.models import ConocimientoUAEMEX
 from .ollama_service import OllamaService
 
@@ -17,7 +18,19 @@ class ModelUpdater:
         Combina todo el conocimiento de la BD para crear el contexto,
         limitando la cantidad y limpiando caracteres problemáticos.
         """
-        conocimientos = ConocimientoUAEMEX.objects.all()[:5]
+        prioridad_admision = ConocimientoUAEMEX.objects.filter(
+            Q(contenido__icontains='admisión') |
+            Q(contenido__icontains='admision') |
+            Q(contenido__icontains='examen') |
+            Q(contenido__icontains='convocatoria') |
+            Q(contenido__icontains='preinscrip')
+        ).order_by('-fecha_actualizacion')[:30]
+        recientes = ConocimientoUAEMEX.objects.order_by('-fecha_actualizacion')[:70]
+        mapa = {}
+        for item in list(prioridad_admision) + list(recientes):
+            if item.fuente not in mapa:
+                mapa[item.fuente] = item
+        conocimientos = list(mapa.values())[:80]
 
         if not conocimientos:
             return "Información de la UAEMEX no disponible."
@@ -30,7 +43,7 @@ class ModelUpdater:
             contenido_limpio = ' '.join(contenido_limpio.split())
             titulo_limpio = conocimiento.titulo.upper()
 
-            texto_combinado.append(f"--- {titulo_limpio} ---")
+            texto_combinado.append(f"--- {titulo_limpio} | FUENTE: {conocimiento.fuente} ---")
             texto_combinado.append(contenido_limpio)
             texto_combinado.append("")  # Línea en blanco
 
@@ -62,6 +75,8 @@ DIRECTRICES:
 4. Mantén un tono amable y servicial, representando los valores de la UAEMEX.
 5. Proporciona información precisa y actualizada sobre la universidad.
 6. Si necesitas más información, sugiere consultar las fuentes oficiales.
+7. Nunca inventes cifras de costos, fechas, requisitos o convocatorias.
+8. Si hay cifras distintas en fuentes, indica que pueden cambiar y recomienda verificar la convocatoria oficial vigente.
 
 Tu objetivo es ayudar a estudiantes, profesores y público en general con información sobre la UAEMEX.
 \"\"\"
