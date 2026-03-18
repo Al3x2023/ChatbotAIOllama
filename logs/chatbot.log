@@ -56,3 +56,59 @@
 2026-03-18 10:47:05,208 INFO chat.views chat_api session=c1y1ij81mh93iczkb7hqxsdxk6aw6zrs elapsed=31.95s
 2026-03-18 10:54:15,881 INFO django.utils.autoreload C:\Users\Alejandro\Desktop\ChatbotAIOllama\chatbot_project\settings.py changed, reloading.
 2026-03-18 10:54:16,956 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:00:15,153 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:00:21,614 WARNING django.request Not Found: /static/css/estilo-uaemex.css
+2026-03-18 14:00:21,615 WARNING django.request Not Found: /static/img/logo-uaemex.png
+2026-03-18 14:00:21,617 WARNING django.request Not Found: /static/js/chat.js
+2026-03-18 14:00:21,673 WARNING django.request Not Found: /favicon.ico
+2026-03-18 14:00:37,528 WARNING django.request Not Found: /static/css/estilo-uaemex.css
+2026-03-18 14:00:37,529 WARNING django.request Not Found: /static/img/logo-uaemex.png
+2026-03-18 14:00:37,530 WARNING django.request Not Found: /static/js/chat.js
+2026-03-18 14:01:26,740 WARNING django.request Not Found: /static/css/estilo-uaemex.css
+2026-03-18 14:01:26,741 WARNING django.request Not Found: /static/js/chat.js
+2026-03-18 14:01:26,742 WARNING django.request Not Found: /static/img/logo-uaemex.png
+2026-03-18 14:08:24,066 WARNING django.request Not Found: /static/css/estilo-uaemex.css
+2026-03-18 14:08:24,069 WARNING django.request Not Found: /static/img/logo-uaemex.png
+2026-03-18 14:08:24,071 WARNING django.request Not Found: /static/js/chat.js
+2026-03-18 14:08:36,613 WARNING django.request Not Found: /static/css/estilo-uaemex.css
+2026-03-18 14:08:36,614 WARNING django.request Not Found: /static/js/chat.js
+2026-03-18 14:08:36,616 WARNING django.request Not Found: /static/img/logo-uaemex.png
+2026-03-18 14:09:30,183 WARNING django.request Not Found: /static/css/estilo-uaemex.css
+2026-03-18 14:09:30,184 WARNING django.request Not Found: /static/img/logo-uaemex.png
+2026-03-18 14:09:30,185 WARNING django.request Not Found: /static/js/chat.js
+2026-03-18 14:17:56,759 INFO django.utils.autoreload C:\Users\Alejandro\Desktop\ChatbotAIOllama\chatbot_project\settings.py changed, reloading.
+2026-03-18 14:17:57,817 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:18:42,221 INFO django.utils.autoreload C:\Users\Alejandro\Desktop\ChatbotAIOllama\chat\views.py changed, reloading.
+2026-03-18 14:18:43,150 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:18:55,456 INFO django.utils.autoreload C:\Users\Alejandro\Desktop\ChatbotAIOllama\chat\views.py changed, reloading.
+2026-03-18 14:18:56,324 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:21:10,832 INFO django.utils.autoreload C:\Users\Alejandro\Desktop\ChatbotAIOllama\chat\views.py changed, reloading.
+2026-03-18 14:21:12,022 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:22:35,733 INFO django.utils.autoreload C:\Users\Alejandro\Desktop\ChatbotAIOllama\chatbot_project\settings.py changed, reloading.
+2026-03-18 14:22:37,174 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:22:58,920 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:25:04,063 WARNING django.request Not Found: /favicon.ico
+2026-03-18 14:25:11,084 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/oferta-educativa/licenciaturas
+2026-03-18 14:25:14,097 INFO chat.views Timeout consultando fuente https://www.uaemex.mx
+2026-03-18 14:26:03,430 INFO chat.views chat_api session=xawiaeuph8ret0owxc8th5dqjfpq0y52 elapsed=55.36s
+2026-03-18 14:26:29,052 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/oferta-educativa/licenciaturas
+2026-03-18 14:26:32,062 INFO chat.views Timeout consultando fuente https://www.uaemex.mx
+2026-03-18 14:27:05,811 INFO chat.views chat_api session=xawiaeuph8ret0owxc8th5dqjfpq0y52 elapsed=39.77s
+2026-03-18 14:27:41,186 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/oferta-educativa/licenciaturas
+2026-03-18 14:27:44,196 INFO chat.views Timeout consultando fuente https://www.uaemex.mx
+2026-03-18 14:28:17,886 INFO chat.views chat_api session=xawiaeuph8ret0owxc8th5dqjfpq0y52 elapsed=39.71s
+2026-03-18 14:30:11,873 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/oferta-educativa/licenciaturas
+2026-03-18 14:30:14,878 INFO chat.views Timeout consultando fuente https://www.uaemex.mx
+2026-03-18 14:30:32,313 INFO chat.views chat_api session=xawiaeuph8ret0owxc8th5dqjfpq0y52 elapsed=23.45s
+2026-03-18 14:48:59,289 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 14:50:19,787 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/oferta-educativa/licenciaturas
+2026-03-18 14:50:22,796 INFO chat.views Timeout consultando fuente https://www.uaemex.mx
+2026-03-18 14:51:10,693 INFO chat.views chat_api session=xawiaeuph8ret0owxc8th5dqjfpq0y52 elapsed=53.93s
+2026-03-18 14:53:56,706 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/
+2026-03-18 14:53:59,714 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/admision-y-oferta-educativa.html
+2026-03-18 14:54:02,738 INFO chat.views Timeout consultando fuente https://nuevoingreso.uaemex.mx/
+2026-03-18 14:54:05,745 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/convocatorias.html
+2026-03-18 14:54:08,755 INFO chat.views Timeout consultando fuente https://nuevoingreso.uaemex.mx/
+2026-03-18 14:54:11,766 INFO chat.views Timeout consultando fuente https://www.uaemex.mx/oferta-educativa/licenciaturas
+2026-03-18 14:54:14,782 INFO chat.views Timeout consultando fuente https://www.uaemex.mx
+2026-03-18 14:54:14,790 INFO chat.views chat_api session=xawiaeuph8ret0owxc8th5dqjfpq0y52 elapsed=21.10s
