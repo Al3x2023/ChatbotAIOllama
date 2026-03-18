@@ -39,13 +39,10 @@ class PDFService:
             try:
                 response = self._descargar(url)
                 if response.status_code != 200:
-                    resultados.append({'url': url, 'omitido': True, 'motivo': f'http_{response.status_code}'})
-                    logger.warning(f"Omitido PDF {url}: HTTP {response.status_code}")
-                    continue
+                    raise Exception(f"HTTP {response.status_code}")
                 content_type = response.headers.get('Content-Type', '').lower()
                 if 'pdf' not in content_type and not url.lower().endswith('.pdf'):
                     resultados.append({'url': url, 'omitido': True, 'motivo': f'content_type_no_pdf:{content_type or "desconocido"}'})
-                    logger.warning(f"Omitido PDF {url}: content-type {content_type or 'desconocido'}")
                     continue
 
                 # Calcular hash del contenido
@@ -93,10 +90,6 @@ class PDFService:
                             'tipo': tipo
                         }
                     )
-                else:
-                    resultados.append({'url': url, 'omitido': True, 'motivo': 'sin_texto_extraible'})
-                    logger.warning(f"Omitido PDF {url}: sin texto extraíble")
-                    continue
 
                 resultados.append({
                     'url': url,
@@ -107,7 +100,7 @@ class PDFService:
                 logger.info(f"  → Texto extraído: {len(texto)} caracteres")
 
             except Exception as e:
-                logger.warning(f"Error procesando PDF {url}: {e}")
+                logger.error(f"Error procesando PDF {url}: {e}")
                 resultados.append({'url': url, 'error': str(e)})
 
         return resultados

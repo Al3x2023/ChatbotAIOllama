@@ -1,8 +1,1 @@
 logs/chatbot.log
-.env
-db.sqlite3
-venv/
-__pycache__/
-*.pyc
-media/
-backups/
