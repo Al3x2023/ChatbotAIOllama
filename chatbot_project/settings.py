@@ -20,6 +20,11 @@ DEBUG = env_bool('DJANGO_DEBUG', True)
 ENVIRONMENT = os.getenv('DJANGO_ENV', 'development').strip().lower()
 
 ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost')
+VPS_PUBLIC_IP = os.getenv('VPS_PUBLIC_IP', '').strip()
+if VPS_PUBLIC_IP and VPS_PUBLIC_IP not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(VPS_PUBLIC_IP)
+if '*' in ALLOWED_HOSTS and ENVIRONMENT == 'production':
+    ALLOWED_HOSTS = [h for h in ALLOWED_HOSTS if h != '*']
 CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS', '')
 
 INSTALLED_APPS = [

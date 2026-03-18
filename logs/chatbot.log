@@ -49,3 +49,10 @@
 2026-03-17 22:38:39,949 INFO chat.views chat_api session=2z2tz5akrniol722px68n5dacs28iz3f elapsed=32.25s
 2026-03-17 23:07:59,801 INFO chat.views chat_api session=2z2tz5akrniol722px68n5dacs28iz3f elapsed=87.47s
 2026-03-17 23:17:34,603 INFO chat.views chat_api session=2z2tz5akrniol722px68n5dacs28iz3f elapsed=59.08s
+2026-03-18 10:42:53,583 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-03-18 10:43:24,809 WARNING django.request Not Found: /favicon.ico
+2026-03-18 10:44:23,778 INFO chat.views chat_api session=c1y1ij81mh93iczkb7hqxsdxk6aw6zrs elapsed=48.09s
+2026-03-18 10:45:24,601 INFO chat.views chat_api session=c1y1ij81mh93iczkb7hqxsdxk6aw6zrs elapsed=31.14s
+2026-03-18 10:47:05,208 INFO chat.views chat_api session=c1y1ij81mh93iczkb7hqxsdxk6aw6zrs elapsed=31.95s
+2026-03-18 10:54:15,881 INFO django.utils.autoreload C:\Users\Alejandro\Desktop\ChatbotAIOllama\chatbot_project\settings.py changed, reloading.
+2026-03-18 10:54:16,956 INFO django.utils.autoreload Watching for file changes with StatReloader

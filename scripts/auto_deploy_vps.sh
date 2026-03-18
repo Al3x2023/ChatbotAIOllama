@@ -7,6 +7,14 @@ PYTHON_BIN="${PYTHON_BIN:-python3}"
 VENV_DIR="${VENV_DIR:-$APP_DIR/.venv}"
 SERVICE_NAME="${SERVICE_NAME:-chatbot}"
 OLLAMA_SERVICE_NAME="${OLLAMA_SERVICE_NAME:-ollama}"
+AUTO_INSTALL_SYSTEMD="${AUTO_INSTALL_SYSTEMD:-true}"
+APP_USER="${APP_USER:-www-data}"
+APP_GROUP="${APP_GROUP:-www-data}"
+GUNICORN_BIN="${GUNICORN_BIN:-$VENV_DIR/bin/gunicorn}"
+PORT="${PORT:-8000}"
+WORKERS="${WORKERS:-3}"
+ALLOWED_HOSTS="${ALLOWED_HOSTS:-127.0.0.1,localhost}"
+SYSTEMD_ENV_FILE="${SYSTEMD_ENV_FILE:-$APP_DIR/.env}"
 RUN_MIGRATIONS="${RUN_MIGRATIONS:-true}"
 RUN_COLLECTSTATIC="${RUN_COLLECTSTATIC:-true}"
 RESTART_SERVICE="${RESTART_SERVICE:-true}"
@@ -21,7 +29,7 @@ PIPELINE_HTML_FILE="${PIPELINE_HTML_FILE:-clasificadas/html.txt}"
 PIPELINE_PDF_FILE="${PIPELINE_PDF_FILE:-clasificadas/pdfs.txt}"
 BACKUP_BEFORE_DEPLOY="${BACKUP_BEFORE_DEPLOY:-true}"
 BACKUP_DIR="${BACKUP_DIR:-$APP_DIR/backups}"
-HEALTHCHECK_URL="${HEALTHCHECK_URL:-http://127.0.0.1/api/health/}"
+HEALTHCHECK_URL="${HEALTHCHECK_URL:-http://127.0.0.1:8000/api/health/}"
 RUN_HEALTHCHECK="${RUN_HEALTHCHECK:-true}"
 
 cd "$APP_DIR"
@@ -64,6 +72,14 @@ if [ "$RUN_COLLECTSTATIC" = "true" ]; then
 fi
 
 if [ "$RESTART_SERVICE" = "true" ]; then
+  if ! systemctl list-unit-files | grep -q "^${SERVICE_NAME}\.service"; then
+    if [ "$AUTO_INSTALL_SYSTEMD" = "true" ] && [ -f "$APP_DIR/scripts/instalar_systemd_vps.sh" ]; then
+      APP_DIR="$APP_DIR" APP_USER="$APP_USER" APP_GROUP="$APP_GROUP" PYTHON_BIN="$VENV_DIR/bin/python" GUNICORN_BIN="$GUNICORN_BIN" SERVICE_NAME="$SERVICE_NAME" PORT="$PORT" WORKERS="$WORKERS" PIPELINE_MAX_PAGES="$PIPELINE_MAX_PAGES" PIPELINE_HTML_BATCH="$PIPELINE_HTML_BATCH" PIPELINE_PDF_BATCH="$PIPELINE_PDF_BATCH" PIPELINE_HTML_FILE="$PIPELINE_HTML_FILE" PIPELINE_PDF_FILE="$PIPELINE_PDF_FILE" ALLOWED_HOSTS="$ALLOWED_HOSTS" ENV_FILE="$SYSTEMD_ENV_FILE" bash "$APP_DIR/scripts/instalar_systemd_vps.sh"
+    else
+      echo "No existe ${SERVICE_NAME}.service y no se pudo auto-instalar."
+      exit 1
+    fi
+  fi
   sudo systemctl restart "$SERVICE_NAME"
   sudo systemctl is-active --quiet "$SERVICE_NAME"
 fi
@@ -91,7 +107,7 @@ if [ "$RUN_HEALTHCHECK" = "true" ]; then
     python - <<'PY'
 import os
 import urllib.request
-urllib.request.urlopen(os.environ.get("HEALTHCHECK_URL", "http://127.0.0.1/api/health/"), timeout=10).read()
+urllib.request.urlopen(os.environ.get("HEALTHCHECK_URL", "http://127.0.0.1:8000/api/health/"), timeout=10).read()
 PY
   fi
 fi
