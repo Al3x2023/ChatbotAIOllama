@@ -9,7 +9,20 @@ def _es_url_valida(url):
     except Exception:
         return False
 
-def cargar_urls_desde_archivo(ruta_archivo, max_lineas=None):
+
+def _normalizar_url(valor):
+    limpio = valor.strip().strip('`').strip('"').strip("'").strip('<>').strip()
+    if limpio.startswith('www.'):
+        limpio = f'https://{limpio}'
+    return limpio
+
+
+def _parece_pdf(url):
+    lower = url.lower()
+    return '.pdf' in lower or '/pdf/' in lower or 'bitstream' in lower
+
+
+def cargar_urls_desde_archivo(ruta_archivo, max_lineas=None, tipo='all'):
     """
     Lee un archivo de texto con una URL por línea y devuelve una lista.
     Si max_lineas está definido, solo toma esa cantidad.
@@ -19,12 +32,21 @@ def cargar_urls_desde_archivo(ruta_archivo, max_lineas=None):
     with open(ruta_archivo, 'r', encoding='utf-8') as f:
         lineas = f.readlines()
     urls = []
+    vistos = set()
     for linea in lineas:
-        valor = linea.strip()
+        valor = _normalizar_url(linea)
         if not valor or valor.startswith('#'):
             continue
-        if _es_url_valida(valor):
-            urls.append(valor)
+        if not _es_url_valida(valor):
+            continue
+        if tipo == 'pdf' and not _parece_pdf(valor):
+            continue
+        if tipo == 'html' and _parece_pdf(valor):
+            continue
+        if valor in vistos:
+            continue
+        vistos.add(valor)
+        urls.append(valor)
     if max_lineas:
         urls = urls[:max_lineas]
     return urls

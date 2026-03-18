@@ -22,14 +22,31 @@ class PDFService:
 
     def descargar_y_procesar_pdfs(self):
         resultados = []
+        vistos = set()
         for url in self.pdf_urls:
             if not url:
+                continue
+            url = str(url).strip().strip('`').strip('"').strip("'").strip('<>').strip()
+            if not url:
+                continue
+            if url in vistos:
+                continue
+            vistos.add(url)
+            if '.pdf' not in url.lower() and '/pdf/' not in url.lower() and 'bitstream' not in url.lower():
+                resultados.append({'url': url, 'omitido': True, 'motivo': 'no_parece_pdf'})
                 continue
             logger.info(f"Procesando PDF: {url}")
             try:
                 response = self._descargar(url)
                 if response.status_code != 200:
-                    raise Exception(f"HTTP {response.status_code}")
+                    resultados.append({'url': url, 'omitido': True, 'motivo': f'http_{response.status_code}'})
+                    logger.warning(f"Omitido PDF {url}: HTTP {response.status_code}")
+                    continue
+                content_type = response.headers.get('Content-Type', '').lower()
+                if 'pdf' not in content_type and not url.lower().endswith('.pdf'):
+                    resultados.append({'url': url, 'omitido': True, 'motivo': f'content_type_no_pdf:{content_type or "desconocido"}'})
+                    logger.warning(f"Omitido PDF {url}: content-type {content_type or 'desconocido'}")
+                    continue
 
                 # Calcular hash del contenido
                 contenido = response.content
@@ -76,6 +93,10 @@ class PDFService:
                             'tipo': tipo
                         }
                     )
+                else:
+                    resultados.append({'url': url, 'omitido': True, 'motivo': 'sin_texto_extraible'})
+                    logger.warning(f"Omitido PDF {url}: sin texto extraíble")
+                    continue
 
                 resultados.append({
                     'url': url,
@@ -86,7 +107,7 @@ class PDFService:
                 logger.info(f"  → Texto extraído: {len(texto)} caracteres")
 
             except Exception as e:
-                logger.error(f"Error procesando PDF {url}: {e}")
+                logger.warning(f"Error procesando PDF {url}: {e}")
                 resultados.append({'url': url, 'error': str(e)})
 
         return resultados

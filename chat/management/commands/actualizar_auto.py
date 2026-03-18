@@ -8,15 +8,15 @@ class Command(BaseCommand):
     help = 'Ejecuta el proceso automático de actualización con lotes de URLs externas'
 
     @staticmethod
-    def _resolver_archivo(ruta_recibida, candidatos):
+    def _resolver_archivo(ruta_recibida, candidatos, tipo):
         if ruta_recibida and os.path.exists(ruta_recibida):
-            if cargar_urls_desde_archivo(ruta_recibida):
+            if cargar_urls_desde_archivo(ruta_recibida, tipo=tipo):
                 return ruta_recibida
         mejor_ruta = None
         mejor_cantidad = -1
         for ruta in candidatos:
             if os.path.exists(ruta):
-                cantidad = len(cargar_urls_desde_archivo(ruta))
+                cantidad = len(cargar_urls_desde_archivo(ruta, tipo=tipo))
                 if cantidad > mejor_cantidad:
                     mejor_cantidad = cantidad
                     mejor_ruta = ruta
@@ -68,21 +68,23 @@ class Command(BaseCommand):
                 str(base / 'html_interesantes.txt'),
                 str(base / 'htmls_interesantes.txt'),
                 str(base / 'html.txt')
-            ]
+            ],
+            'html'
         )
         ruta_pdf = self._resolver_archivo(
             options['archivo_pdf'],
             [
                 str(base / 'pdfs_interesantes.txt'),
                 str(base / 'pdfs.txt')
-            ]
+            ],
+            'pdf'
         )
         lote_html = options['lote_html']
         lote_pdf = options['lote_pdf']
         
         # Cargar URLs
-        urls_html = cargar_urls_desde_archivo(ruta_html)
-        urls_pdf = cargar_urls_desde_archivo(ruta_pdf)
+        urls_html = cargar_urls_desde_archivo(ruta_html, tipo='html')
+        urls_pdf = cargar_urls_desde_archivo(ruta_pdf, tipo='pdf')
         self.stdout.write(f"Archivo HTML usado: {ruta_html}")
         self.stdout.write(f"Archivo PDF usado: {ruta_pdf}")
         
