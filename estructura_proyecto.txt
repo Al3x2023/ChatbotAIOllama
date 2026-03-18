@@ -1,0 +1,35 @@
+ChatbotAIOllama/
+├── chat/
+│   ├── management/
+│   │   └── commands/
+│   ├── migrations/
+│   ├── services/
+│   ├── static/
+│   │   ├── css/
+│   │   ├── img/
+│   │   └── js/
+│   ├── templates/
+│   │   └── chat/
+│   ├── utils/
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── urls.py
+│   └── views.py
+├── chatbot_project/
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── media/
+│   └── pdfs/
+├── scripts/
+│   ├── actualizar_todo.py
+│   ├── auto_deploy_vps.sh
+│   └── instalar_systemd_vps.sh
+├── .env
+├── README.md
+├── conocimiento.csv
+├── db.sqlite3
+├── manage.py
+└── requirements.txt

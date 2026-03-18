@@ -1,4 +1,13 @@
 import os
+from urllib.parse import urlparse
+
+
+def _es_url_valida(url):
+    try:
+        parsed = urlparse(url)
+        return parsed.scheme in ('http', 'https') and bool(parsed.netloc)
+    except Exception:
+        return False
 
 def cargar_urls_desde_archivo(ruta_archivo, max_lineas=None):
     """
@@ -9,7 +18,13 @@ def cargar_urls_desde_archivo(ruta_archivo, max_lineas=None):
         return []
     with open(ruta_archivo, 'r', encoding='utf-8') as f:
         lineas = f.readlines()
-    urls = [linea.strip() for linea in lineas if linea.strip()]
+    urls = []
+    for linea in lineas:
+        valor = linea.strip()
+        if not valor or valor.startswith('#'):
+            continue
+        if _es_url_valida(valor):
+            urls.append(valor)
     if max_lineas:
         urls = urls[:max_lineas]
     return urls
