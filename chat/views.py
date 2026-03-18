@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.views.decorators.http import require_POST
 from django.core.cache import cache
 from django.db import connection
@@ -31,6 +31,7 @@ def index(request):
     }
     return render(request, 'chat/index.html', context)
 
+@csrf_exempt
 @require_POST
 def chat_api(request):
     start_time = time.time()
