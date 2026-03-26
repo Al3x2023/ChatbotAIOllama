@@ -72,10 +72,10 @@ if DB_ENGINE == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.getenv('DB_NAME', 'uaemex_chatbot'),
-            'USER': os.getenv('DB_USER', 'root'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+            'NAME': os.getenv('DB_NAME', 'dbpreguntas'),
+            'USER': os.getenv('DB_USER', 'udbpreguntas'),
+            'PASSWORD': os.getenv('DB_PASSWORD', 'bQt#9$2s'),
+            'HOST': os.getenv('DB_HOST', 'bases.dev.uaemex.mx'),
             'PORT': os.getenv('DB_PORT', '3306'),
             'CONN_MAX_AGE': int(os.getenv('DB_CONN_MAX_AGE', '60')),
             'OPTIONS': {'charset': 'utf8mb4'},

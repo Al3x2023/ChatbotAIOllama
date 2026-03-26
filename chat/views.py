@@ -3,6 +3,7 @@ import logging
 import re
 import time
 import requests
+import unicodedata
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.shortcuts import render
@@ -12,24 +13,21 @@ from django.views.decorators.http import require_POST
 from django.core.cache import cache
 from django.db import connection
 from django.db.models import Q
-from .models import Conversacion, ConocimientoUAEMEX
+from .models import Conversacion, ConocimientoUAEMEX, Pregunta
 from .services.ollama_service import OllamaService
 
 logger = logging.getLogger(__name__)
 ollama_service = OllamaService()
-PATRON_MONTO = re.compile(r'(?<!\d)(\d{2,5})(?:[.,]\d{1,2})?\s*(?:pesos|mxn)?', re.IGNORECASE)
 
 @ensure_csrf_cookie
 def index(request):
     if not request.session.session_key:
         request.session.create()
-    ollama_ok = ollama_service.verificar_estado_rapido()
-    context = {
+    return render(request, 'chat/index.html', {
         'session_id': request.session.session_key,
         'titulo': 'Asistente Virtual UAEMEX',
-        'ollama_activo': ollama_ok
-    }
-    return render(request, 'chat/index.html', context)
+        'ollama_activo': ollama_service.verificar_estado_rapido()
+    })
 
 @require_POST
 def chat_api(request):
@@ -38,103 +36,129 @@ def chat_api(request):
         data = json.loads(request.body)
         mensaje = (data.get('mensaje', '') or '').strip()
         session_id = data.get('session_id', request.session.session_key)
-        if not mensaje:
-            return JsonResponse({'respuesta': 'Tu mensaje está vacío.'}, status=400)
-        if len(mensaje) > 1000:
-            return JsonResponse({'respuesta': 'Tu mensaje es demasiado largo.'}, status=400)
+        
+        if not mensaje: return JsonResponse({'respuesta': 'Tu mensaje está vacío.'}, status=400)
 
-        throttle_key = f"chat_throttle_{session_id}"
-        throttle_count = cache.get(throttle_key, 0)
-        if throttle_count >= 25:
-            return JsonResponse({'respuesta': 'Demasiadas solicitudes. Intenta en un minuto.'}, status=429)
-        cache.set(throttle_key, throttle_count + 1, 60)
+        # INTERCEPTOR DE SALUDOS BÁSICOS EN PYTHON
+        mensaje_limpio_saludo = re.sub(r'[^\w\s]', '', mensaje.lower()).strip()
+        if mensaje_limpio_saludo in {'hola', 'buenas', 'buenos dias', 'buenas tardes', 'buenas noches', 'saludos', 'que tal', 'hey'}:
+            resp = "¡Hola! Soy el Asistente Virtual Oficial de la UAEMex. ¿En qué trámite o duda puedo ayudarte hoy?"
+            Conversacion.objects.create(session_id=session_id, pregunta=mensaje, respuesta=resp)
+            return JsonResponse({'respuesta': resp})
 
-        ultima_conversacion = Conversacion.objects.filter(session_id=session_id).order_by('-fecha').first()
+        # HISTORIAL DE CONVERSACIÓN
+        query_conversaciones = Conversacion.objects.filter(session_id=session_id).order_by('-fecha')[:3]
+        ultimas_conversaciones = list(query_conversaciones)
+        ultimas_conversaciones.reverse() 
+        
         historial_list = []
-        if ultima_conversacion:
-            historial_list = [{
-                'pregunta': ultima_conversacion.pregunta,
-                'respuesta': ultima_conversacion.respuesta
-            }]
+        for conv in ultimas_conversaciones:
+            if "¡Hola! Soy el Asistente" not in conv.respuesta:
+                historial_list.append({'pregunta': conv.pregunta, 'respuesta': conv.respuesta})
 
-        contexto = buscar_contexto_relevante_rapido(mensaje)
-        respuesta_precisa = responder_pregunta_admision(mensaje)
-        if respuesta_precisa:
-            respuesta = respuesta_precisa
-        else:
-            respuesta = ollama_service.consultar_con_historial(mensaje, historial_list, contexto)
-        try:
-            conv = Conversacion.objects.create(
-                session_id=session_id,
-                pregunta=mensaje,
-                respuesta=respuesta
-            )
-        except Exception as e:
-            logger.warning("No se pudo guardar conversación: %s", e)
+        # MEMORIA DE BÚSQUEDA
+        mensaje_busqueda = mensaje
+        if ultimas_conversaciones:
+            ultima = ultimas_conversaciones[-1]
+            if len(mensaje.split()) <= 4 and "¡Hola!" not in ultima.respuesta:
+                mensaje_busqueda = f"{ultima.pregunta} {mensaje}"
 
-        elapsed = time.time() - start_time
-        logger.info("chat_api session=%s elapsed=%.2fs", session_id, elapsed)
+        # EJECUTAR BUSCADOR 3 TIER
+        contexto = buscar_contexto_relevante_rapido(mensaje_busqueda, mensaje, limite=5)
+        
+        respuesta = ollama_service.consultar_con_historial(mensaje, historial_list, contexto)
+            
+        Conversacion.objects.create(session_id=session_id, pregunta=mensaje, respuesta=respuesta)
+        logger.info("chat_api session=%s elapsed=%.2fs", session_id, time.time() - start_time)
+        
         return JsonResponse({'respuesta': respuesta})
     except Exception as e:
         logger.exception("Error general en chat_api: %s", e)
         return JsonResponse({'respuesta': 'Error interno del servidor'}, status=500)
 
-def buscar_contexto_relevante_rapido(mensaje, limite=2):
-    """
-    Versión ultra-rápida de búsqueda de contexto con logs
-    """
-    cache_key = f"contexto_{hash(mensaje)}"
+def buscar_contexto_relevante_rapido(mensaje_busqueda, mensaje_original, limite=5):
+    cache_key = f"contexto_{hash(mensaje_busqueda)}"
     contexto_cache = cache.get(cache_key)
-    if contexto_cache:
-        return contexto_cache
-
-    palabras = mensaje.lower().split()
-    palabras_clave = [p for p in palabras if len(p) > 3][:3]
-
-    if not palabras_clave:
-        return ""
+    if contexto_cache: return contexto_cache
 
     contextos = []
 
+    # TIER 1: BÚSQUEDA POR FRASE EXACTA (Resuelve el problema de "Tiene algún costo?")
+    mensaje_sin_acentos_orig = ''.join((c for c in unicodedata.normalize('NFD', mensaje_original) if unicodedata.category(c) != 'Mn'))
+    frase_exacta = mensaje_sin_acentos_orig.lower().replace('?', '').replace('¿', '').strip()
+    
+    if len(frase_exacta) > 5:
+        preguntas_exactas = list(Pregunta.objects.filter(pregunta__icontains=frase_exacta)[:2])
+        for p in preguntas_exactas:
+            contextos.append(f"FAQ EXACTA: Pregunta: '{p.pregunta}' Respuesta: '{p.respuesta}'")
+        
+        if contextos: return "\n\n".join(contextos) # Si encuentra la frase, se detiene aquí y no busca basura.
+
+    # PREPARACIÓN PARA TIER 2 Y 3
+    # Quitamos símbolos raros que estorban (como el/la)
+    mensaje_busqueda = mensaje_busqueda.replace('/', ' ')
+    mensaje_sin_acentos = ''.join((c for c in unicodedata.normalize('NFD', mensaje_busqueda) if unicodedata.category(c) != 'Mn'))
+    palabras = mensaje_sin_acentos.lower().replace('?', '').replace('¿', '').replace('.', '').replace(',', '').split()
+    
+    # Agregamos nuevas palabras trampa a la lista negra
+    stop_words = {
+        'para', 'como', 'cuales', 'cual', 'sobre', 'este', 'esta', 'todo', 'pero', 'nivel', 
+        'los', 'las', 'son', 'del', 'que', 'una', 'uno', 'universidad', 'uaemex', 'uaem', 
+        'quien', 'cuando', 'donde', 'tiene', 'algun', 'hacer', 'actual', 'institucion', 
+        'repite', 'repetir', 'anterior', 'puedes', 'decirme', 'okey', 'hola'
+    }
+    
+    # LA MAGIA: Cortamos a 6 letras. "rectora" -> "rector". "rector" -> "rector". 
+    palabras_clave = [p[:6] for p in palabras if len(p) > 2 and p not in stop_words]
+    
+    if not palabras_clave: palabras_clave = [p[:6] for p in palabras if len(p) > 2]
+    palabras_clave = list(dict.fromkeys(palabras_clave))[:6] # Eliminar duplicados
+
+    if not palabras_clave: return ""
+
+    # TIER 2: BÚSQUEDA ESTRICTA (AND) - Deben estar TODAS las palabras
     try:
-        filtro = Q()
-        for palabra in palabras_clave:
-            filtro |= Q(contenido__icontains=palabra) | Q(titulo__icontains=palabra)
-        query = ConocimientoUAEMEX.objects.filter(filtro).order_by('-fecha_actualizacion')[:limite]
-        for conocimiento in query:
-            contextos.append(conocimiento.contenido[:300])
-    except Exception as e:
-        logger.warning("Error en búsqueda de contexto por BD: %s", e)
+        filtro_and_preg = Q()
+        for palabra in palabras_clave: filtro_and_preg &= (Q(pregunta__icontains=palabra) | Q(respuesta__icontains=palabra))
+        preg_and = list(Pregunta.objects.filter(filtro_and_preg)[:3])
+
+        filtro_and_pdf = Q()
+        for palabra in palabras_clave: filtro_and_pdf &= (Q(contenido__icontains=palabra) | Q(titulo__icontains=palabra))
+        pdf_and = list(ConocimientoUAEMEX.objects.filter(filtro_and_pdf).order_by('-fecha_actualizacion')[:3])
+
+        for p in preg_and: contextos.append(f"FAQ: Pregunta: '{p.pregunta}' Respuesta: '{p.respuesta}'")
+        for doc in pdf_and: contextos.append(f"DOC: {doc.contenido[:500]}")
+        
+        if contextos: return "\n\n".join(contextos)
+    except: pass
+
+    # TIER 3: BÚSQUEDA FLEXIBLE (OR) - Solo si falló lo anterior
+    try:
+        filtro_or_preg = Q()
+        for palabra in palabras_clave: filtro_or_preg |= (Q(pregunta__icontains=palabra) | Q(respuesta__icontains=palabra))
+        preg_or = list(Pregunta.objects.filter(filtro_or_preg)[:5])
+
+        filtro_or_pdf = Q()
+        for palabra in palabras_clave: filtro_or_pdf |= (Q(contenido__icontains=palabra) | Q(titulo__icontains=palabra))
+        pdf_or = list(ConocimientoUAEMEX.objects.filter(filtro_or_pdf).order_by('-fecha_actualizacion')[:3])
+
+        for p in preg_or: contextos.append(f"FAQ: Pregunta: '{p.pregunta}' Respuesta: '{p.respuesta}'")
+        for doc in pdf_or: contextos.append(f"DOC: {doc.contenido[:500]}")
+    except: pass
 
     if not contextos:
-        resultado_web = buscar_en_uaemex_web_rapido(mensaje)
-        if resultado_web:
-            contextos.append(resultado_web)
+        res_web = buscar_en_uaemex_web_rapido(mensaje_busqueda)
+        if res_web: contextos.append(res_web)
 
-    if not contextos:
-        return ""
-
-    resultado = "\n\n".join(contextos[:limite])
-    cache.set(cache_key, resultado, 60 * 5)
-    return resultado
+    return "\n\n".join(contextos)
 
 def buscar_en_uaemex_web_rapido(consulta):
-    """
-    Versión ultra-rápida de búsqueda web (timeout reducido) con logs
-    """
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-
+    headers = {'User-Agent': 'Mozilla/5.0'}
     urls_rapidas = []
-    terminos_admision = ['admis', 'examen', 'convoc', 'preinscrip', 'nuevo ingreso']
+    terminos_admision = ['admis', 'examen', 'convoc', 'preinscrip']
     if any(t in consulta.lower() for t in terminos_admision):
-        urls_rapidas.extend(getattr(settings, 'UAEMEX_SEED_URLS', []))
         urls_rapidas.append("https://nuevoingreso.uaemex.mx/")
-    urls_rapidas.extend([
-        "https://www.uaemex.mx/oferta-educativa/licenciaturas",
-        "https://www.uaemex.mx"
-    ])
+    urls_rapidas.extend(["https://www.uaemex.mx/oferta-educativa/licenciaturas", "https://www.uaemex.mx"])
     for url in urls_rapidas:
         try:
             response = requests.get(url, headers=headers, timeout=3)
@@ -144,120 +168,42 @@ def buscar_en_uaemex_web_rapido(consulta):
                 textos = []
                 for p in parrafos:
                     texto = p.get_text(strip=True)
-                    if texto and len(texto) > 50:
-                        palabras_consulta = consulta.lower().split()[:2]
-                        if any(palabra in texto.lower() for palabra in palabras_consulta):
-                            textos.append(texto[:300])
-                            if len(textos) >= 2:
-                                break
-                if textos:
-                    resultado = ' '.join(textos)
-                    return resultado
-        except requests.exceptions.Timeout:
-            logger.info("Timeout consultando fuente %s", url)
-        except Exception as e:
-            logger.warning("Error consultando fuente %s: %s", url, e)
+                    if len(texto) > 50 and any(pal in texto.lower() for pal in consulta.lower().split()[:2]):
+                        textos.append(texto[:300])
+                        if len(textos) >= 2: break
+                if textos: return ' '.join(textos)
+        except: pass
     return None
-
-
-def responder_pregunta_admision(mensaje):
-    mensaje_l = mensaje.lower()
-    terminos = ['costo', 'cuanto cuesta', 'admis', 'examen', 'convocatoria', 'preinscrip']
-    if not any(t in mensaje_l for t in terminos):
-        return None
-
-    query = ConocimientoUAEMEX.objects.filter(
-        Q(titulo__icontains='admis') |
-        Q(titulo__icontains='convocatoria') |
-        Q(contenido__icontains='admis') |
-        Q(contenido__icontains='examen') |
-        Q(contenido__icontains='derechos')
-    ).order_by('-fecha_actualizacion')[:30]
-
-    mejor_monto = None
-    mejor_fuente = None
-    mejor_titulo = None
-    for item in query:
-        texto = f"{item.titulo} {item.contenido[:2000]}"
-        if not any(k in texto.lower() for k in ['examen', 'admis', 'convocatoria', 'derechos']):
-            continue
-        montos = PATRON_MONTO.findall(texto)
-        candidatos = []
-        for m in montos:
-            try:
-                valor = int(m)
-            except ValueError:
-                continue
-            if 150 <= valor <= 5000:
-                candidatos.append(valor)
-        if candidatos:
-            mejor_monto = max(candidatos)
-            mejor_fuente = item.fuente
-            mejor_titulo = item.titulo
-            break
-
-    if mejor_monto:
-        return (
-            f"Con base en la información institucional más reciente disponible en el sistema, "
-            f"el costo reportado del examen de admisión es de {mejor_monto} pesos mexicanos. "
-            f"Fuente registrada: {mejor_titulo} ({mejor_fuente}). "
-            "Te recomiendo confirmar el monto en la convocatoria vigente del ciclo que vas a presentar, "
-            "porque puede cambiar por año y nivel."
-        )
-    costo_referencia = getattr(settings, 'UAEMEX_ADMISSION_EXAM_COST_MXN', 0)
-    anio_referencia = getattr(settings, 'UAEMEX_ADMISSION_EXAM_COST_YEAR', '')
-    fuente_referencia = getattr(settings, 'UAEMEX_ADMISSION_EXAM_SOURCE_URL', '')
-    if costo_referencia:
-        return (
-            f"El monto de referencia configurado para el examen de admisión UAEMEX "
-            f"({anio_referencia}) es de {costo_referencia} pesos mexicanos. "
-            f"Consulta oficial: {fuente_referencia}. "
-            "Te recomiendo verificar la convocatoria vigente antes de pagar, porque la cifra puede cambiar."
-        )
-    return (
-        "Para darte un monto exacto y evitar errores, necesito validar la convocatoria vigente de admisión. "
-        "Estoy actualizando las fuentes oficiales; por ahora te recomiendo revisar la convocatoria publicada "
-        "en el portal de nuevo ingreso de la UAEMEX para confirmar el costo actual."
-    )
 
 def historial_api(request):
     session_id = request.session.session_key
-    conversaciones = Conversacion.objects.filter(session_id=session_id)[:10]
+    
+    # Traemos las últimas 15 interacciones de esta sesión
+    query_conversaciones = Conversacion.objects.filter(session_id=session_id).order_by('-fecha')[:15]
+    conversaciones = list(query_conversaciones)
+    
+    # Las volteamos para que la más vieja salga arriba y la más nueva hasta abajo
+    conversaciones.reverse() 
+    
     data = [{
-        'pregunta': c.pregunta,
-        'respuesta': c.respuesta[:100] + ('...' if len(c.respuesta) > 100 else ''),
+        'pregunta': c.pregunta, 
+        'respuesta': c.respuesta, # <-- Ya mandamos la respuesta completa, sin recortes
         'fecha': c.fecha.strftime('%Y-%m-%d %H:%M')
     } for c in conversaciones]
+    
     return JsonResponse({'historial': data})
 
 def estado_api(request):
     cache_key = 'estado_ollama'
     estado = cache.get(cache_key)
     if not estado:
-        ollama_ok = ollama_service.verificar_estado_rapido()
-        modelos = ollama_service.listar_modelos()
-        estado = {
-            'ollama_activo': ollama_ok,
-            'modelos_disponibles': len(modelos),
-            'modelo_actual': ollama_service.model
-        }
+        estado = {'ollama_activo': ollama_service.verificar_estado_rapido(), 'modelos_disponibles': len(ollama_service.listar_modelos()), 'modelo_actual': ollama_service.model}
         cache.set(cache_key, estado, 30)
     return JsonResponse(estado)
 
-
 def health_api(request):
-    database_ok = True
+    db_ok = True
     try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT 1")
-            cursor.fetchone()
-    except Exception:
-        database_ok = False
-    estado = {
-        'status': 'ok' if database_ok else 'degraded',
-        'database_ok': database_ok,
-        'ollama_ok': ollama_service.verificar_estado_rapido(),
-        'cache_ok': cache is not None,
-    }
-    http_code = 200 if database_ok else 503
-    return JsonResponse(estado, status=http_code)
+        with connection.cursor() as cursor: cursor.execute("SELECT 1"); cursor.fetchone()
+    except: db_ok = False
+    return JsonResponse({'status': 'ok' if db_ok else 'degraded', 'db_ok': db_ok, 'ollama_ok': ollama_service.verificar_estado_rapido()}, status=200 if db_ok else 503)
