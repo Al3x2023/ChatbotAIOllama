@@ -92,6 +92,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // --- NUEVA FUNCIÓN: RECUPERAR MEMORIA ---
+    async function cargarHistorial() {
+        try {
+            const response = await fetch('/api/historial/');
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Si hay historial, dibujamos los mensajes
+                if (data.historial && data.historial.length > 0) {
+                    data.historial.forEach(item => {
+                        agregarMensaje(item.pregunta, 'user');
+                        agregarMensaje(item.respuesta, 'bot');
+                    });
+                } else {
+                    // Si está vacío, lanzamos un saludo automático
+                    agregarMensaje('¡Hola! Soy el Asistente Virtual Oficial de la UAEMex. ¿En qué trámite o duda puedo ayudarte hoy?', 'bot');
+                }
+            }
+        } catch (error) {
+            console.error('Error cargando el historial:', error);
+            agregarMensaje('¡Hola! Soy el Asistente Virtual Oficial de la UAEMex. ¿En qué trámite o duda puedo ayudarte hoy?', 'bot');
+        }
+    }
+    // ----------------------------------------
+
     // Función para obtener CSRF token
     function getCookie(name) {
         let cookieValue = null;
@@ -123,4 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
+
+    // EJECUTAR LA CARGA DEL HISTORIAL AL INICIAR LA PÁGINA
+    cargarHistorial();
 });

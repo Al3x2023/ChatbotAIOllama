@@ -56,3 +56,28 @@ class DocumentoPDF(models.Model):
     
     def __str__(self):
         return self.nombre
+
+# --- NUEVOS MODELOS PARA TABLAS EXISTENTES ---
+
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=255)
+    activo = models.IntegerField(default=1)
+    
+    class Meta:
+        managed = False  # Evita que Django modifique la tabla existente
+        db_table = 'categorias'
+        
+    def __str__(self):
+        return self.nombre
+
+class Pregunta(models.Model):
+    categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING, db_column='categoria_id', null=True)
+    pregunta = models.TextField()
+    respuesta = models.TextField()
+
+    class Meta:
+        managed = False  # Evita que Django modifique la tabla existente
+        db_table = 'preguntas'
+        
+    def __str__(self):
+        return self.pregunta[:50]
