@@ -24,19 +24,20 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
     
-    function mostrarTipeando() {
-        const tipeandoDiv = document.createElement('div');
-        tipeandoDiv.classList.add('message', 'bot', 'tipeando');
-        tipeandoDiv.id = 'tipeandoIndicator';
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.classList.add('message-content');
-        contentDiv.textContent = '...';
-        
-        tipeandoDiv.appendChild(contentDiv);
-        chatMessages.appendChild(tipeandoDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+function mostrarTipeando() {
+    const tipeandoDiv = document.createElement('div');
+    tipeandoDiv.classList.add('message', 'bot', 'tipeando');
+    tipeandoDiv.id = 'tipeandoIndicator';
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.classList.add('message-content');
+    // No ponemos texto, solo los puntos animados por CSS
+    contentDiv.textContent = ''; 
+    
+    tipeandoDiv.appendChild(contentDiv);
+    chatMessages.appendChild(tipeandoDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
     
     function ocultarTipeando() {
         const tipeando = document.getElementById('tipeandoIndicator');
@@ -92,31 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // --- NUEVA FUNCIÓN: RECUPERAR MEMORIA ---
-    async function cargarHistorial() {
-        try {
-            const response = await fetch('/api/historial/');
-            if (response.ok) {
-                const data = await response.json();
-                
-                // Si hay historial, dibujamos los mensajes
-                if (data.historial && data.historial.length > 0) {
-                    data.historial.forEach(item => {
-                        agregarMensaje(item.pregunta, 'user');
-                        agregarMensaje(item.respuesta, 'bot');
-                    });
-                } else {
-                    // Si está vacío, lanzamos un saludo automático
-                    agregarMensaje('¡Hola! Soy el Asistente Virtual Oficial de la UAEMex. ¿En qué trámite o duda puedo ayudarte hoy?', 'bot');
-                }
-            }
-        } catch (error) {
-            console.error('Error cargando el historial:', error);
-            agregarMensaje('¡Hola! Soy el Asistente Virtual Oficial de la UAEMex. ¿En qué trámite o duda puedo ayudarte hoy?', 'bot');
-        }
-    }
-    // ----------------------------------------
-
     // Función para obtener CSRF token
     function getCookie(name) {
         let cookieValue = null;
@@ -148,7 +124,4 @@ document.addEventListener('DOMContentLoaded', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
-
-    // EJECUTAR LA CARGA DEL HISTORIAL AL INICIAR LA PÁGINA
-    cargarHistorial();
 });
