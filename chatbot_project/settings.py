@@ -112,10 +112,20 @@ MODEL_NAME = os.getenv('MODEL_NAME', 'llama3.2:latest')
 BASE_MODEL = os.getenv('BASE_MODEL', 'llama3.2:latest')
 UAEMEX_BASE_URL = os.getenv('UAEMEX_BASE_URL', 'https://www.uaemex.mx/')
 UAEMEX_PDF_URLS = env_list('UAEMEX_PDF_URLS', '')
+
+# --- AQUI ESTA LA MAGIA: NUEVAS SEED URLS PARA LLENAR LA BD ---
 UAEMEX_SEED_URLS = env_list(
     'UAEMEX_SEED_URLS',
-    'https://www.uaemex.mx/,https://www.uaemex.mx/admision-y-oferta-educativa.html,https://nuevoingreso.uaemex.mx/,https://www.uaemex.mx/convocatorias.html'
+    'https://www.uaemex.mx/identidad-uaemex.html,'
+    'https://www.uaemex.mx/mi-universidad/directorio-telef%C3%B3nico/directorio-organismos-acad%C3%A9micos-y-facultades.html,'
+    'https://nuevoingreso.uaemex.mx/,'
+    'https://www.uaemex.mx/oferta-educativa/licenciaturas.html,'
+    'https://sibecas.uaemex.mx/,'
+    'https://controlescolar.uaemex.mx/,'
+    'https://legislacion.uaemex.mx/'
 )
+# ---------------------------------------------------------------
+
 SCRAPER_MAX_PAGES = int(os.getenv('SCRAPER_MAX_PAGES', '120'))
 SCRAPER_TIMEOUT_SECONDS = int(os.getenv('SCRAPER_TIMEOUT_SECONDS', '10'))
 SCRAPER_MAX_LINKS_PER_PAGE = int(os.getenv('SCRAPER_MAX_LINKS_PER_PAGE', '60'))

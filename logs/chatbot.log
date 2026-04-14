@@ -3102,3 +3102,274 @@ TypeError: Cannot reverse a query once a slice has been taken.
 2026-04-08 10:48:52,488 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=2.07s
 2026-04-08 10:49:11,905 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=2.01s
 2026-04-08 10:54:15,106 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=3.39s
+2026-04-09 10:14:32,786 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-09 10:15:00,770 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=4.94s
+2026-04-09 10:17:05,553 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=1.68s
+2026-04-09 10:17:22,958 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=2.11s
+2026-04-09 10:17:37,800 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=2.09s
+2026-04-09 10:17:48,726 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=2.10s
+2026-04-09 10:18:10,030 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=1.78s
+2026-04-09 10:18:27,698 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=2.10s
+2026-04-09 10:19:33,454 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=4.06s
+2026-04-09 10:19:52,399 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=1.68s
+2026-04-09 10:20:12,913 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=2.18s
+2026-04-09 10:20:23,331 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=1.56s
+2026-04-09 10:20:43,372 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=5.44s
+2026-04-09 10:21:01,548 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=1.73s
+2026-04-09 10:21:14,779 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=2.16s
+2026-04-09 10:21:25,494 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=2.63s
+2026-04-09 10:21:51,891 INFO chat.views chat_api session=widget_1775751275972_fiong2ti elapsed=2.13s
+2026-04-09 10:22:00,264 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=2.11s
+2026-04-09 11:57:50,040 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=6.11s
+2026-04-09 11:58:38,185 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=2.85s
+2026-04-09 12:00:51,970 INFO chat.views chat_api session=w7a2ey9gjitu5e1j0xhhga4qd8c0fc9z elapsed=3.54s
+2026-04-09 14:07:17,624 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 10:25:36,542 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 10:27:09,911 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 11:04:12,873 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 11:04:54,207 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=6.47s
+2026-04-13 11:11:59,655 WARNING django.request Not Found: /favicon.ico
+2026-04-13 11:12:44,054 INFO chat.views chat_api session=s166nld1icyp0ou55gbmf36lr6ec9ilg elapsed=3.50s
+2026-04-13 11:13:09,611 INFO chat.views chat_api session=s166nld1icyp0ou55gbmf36lr6ec9ilg elapsed=3.18s
+2026-04-13 11:13:47,979 INFO chat.views chat_api session=s166nld1icyp0ou55gbmf36lr6ec9ilg elapsed=1.53s
+2026-04-13 11:14:30,419 INFO chat.views chat_api session=s166nld1icyp0ou55gbmf36lr6ec9ilg elapsed=6.22s
+2026-04-13 11:15:15,130 INFO chat.views chat_api session=s166nld1icyp0ou55gbmf36lr6ec9ilg elapsed=2.51s
+2026-04-13 11:15:40,707 INFO chat.views chat_api session=s166nld1icyp0ou55gbmf36lr6ec9ilg elapsed=2.84s
+2026-04-13 11:17:10,906 INFO chat.views chat_api session=s166nld1icyp0ou55gbmf36lr6ec9ilg elapsed=2.56s
+2026-04-13 11:17:30,373 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=2.69s
+2026-04-13 11:17:48,708 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=1.85s
+2026-04-13 11:17:59,299 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=1.55s
+2026-04-13 11:18:11,848 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=2.90s
+2026-04-13 11:18:35,424 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=2.37s
+2026-04-13 11:18:54,905 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=8.23s
+2026-04-13 11:24:31,276 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=5.29s
+2026-04-13 11:27:01,931 WARNING django.request Not Found: /favicon.ico
+2026-04-13 11:40:53,360 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 11:41:22,149 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=6.70s
+2026-04-13 11:42:33,893 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=5.34s
+2026-04-13 11:48:06,739 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 11:48:10,541 WARNING django.request Not Found: /favicon.ico
+2026-04-13 11:48:27,222 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=4.50s
+2026-04-13 11:49:17,546 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=5.03s
+2026-04-13 11:51:27,727 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=1.48s
+2026-04-13 11:51:50,846 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=1.86s
+2026-04-13 13:26:34,674 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 13:44:52,033 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 14:01:06,248 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 14:09:33,350 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-13 20:45:18,393 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 09:22:14,191 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 09:28:36,843 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=7.97s
+2026-04-14 09:29:43,271 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=3.17s
+2026-04-14 09:30:05,969 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=3.99s
+2026-04-14 09:41:01,817 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 09:41:07,823 WARNING django.request Not Found: /favicon.ico
+2026-04-14 09:41:44,283 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=6.00s
+2026-04-14 09:42:04,980 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=3.42s
+2026-04-14 09:42:31,275 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=4.48s
+2026-04-14 09:48:57,748 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 09:48:58,342 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 09:49:17,689 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 09:49:41,777 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=3.95s
+2026-04-14 09:50:00,177 WARNING django.request Not Found: /favicon.ico
+2026-04-14 09:50:08,139 INFO chat.views chat_api session=ghmmu9dzx8ggaqfv7gz2hyr7e8gcreni elapsed=2.04s
+2026-04-14 09:54:26,249 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 09:54:26,651 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 09:54:46,204 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 09:55:08,631 WARNING django.request Not Found: /favicon.ico
+2026-04-14 09:55:39,281 INFO chat.views chat_api session=1emxl4u4f2nn34qrw5u85aeizc8e7m6z elapsed=4.14s
+2026-04-14 09:56:14,996 INFO chat.views chat_api session=1emxl4u4f2nn34qrw5u85aeizc8e7m6z elapsed=1.86s
+2026-04-14 09:56:39,708 INFO chat.views chat_api session=1emxl4u4f2nn34qrw5u85aeizc8e7m6z elapsed=2.15s
+2026-04-14 10:02:03,696 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 10:02:04,104 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:06:07,462 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:06:11,075 ERROR django.request Internal Server Error: /
+Traceback (most recent call last):
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/utils/decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/utils/decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/views.py", line 25, in index
+    'ollama_activo': ollama_service.verificar_estado_rapido()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'OllamaService' object has no attribute 'verificar_estado_rapido'
+2026-04-14 10:06:59,261 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:07:07,813 ERROR django.request Internal Server Error: /
+Traceback (most recent call last):
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/utils/decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/utils/decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/views.py", line 25, in index
+    'ollama_activo': ollama_service.verificar_estado_rapido()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'OllamaService' object has no attribute 'verificar_estado_rapido'
+2026-04-14 10:08:01,061 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 10:08:01,418 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:08:11,603 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 10:08:11,989 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:08:18,543 ERROR django.request Internal Server Error: /
+Traceback (most recent call last):
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/utils/decorators.py", line 188, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/utils/decorators.py", line 186, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/views.py", line 25, in index
+    'ollama_activo': ollama_service.verificar_estado_rapido()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'OllamaService' object has no attribute 'verificar_estado_rapido'
+2026-04-14 10:09:35,901 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 10:09:36,307 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:09:38,413 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 10:09:38,798 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:10:17,928 INFO chat.views chat_api session=jwjzkkgmjd1ppr6zjem1t9p53ibbc6fi elapsed=5.59s
+2026-04-14 10:10:50,827 WARNING django.request Not Found: /favicon.ico
+2026-04-14 10:11:00,601 INFO chat.views chat_api session=miyq9w24i2ri9ltzk0rov1x5k2xa9igl elapsed=2.62s
+2026-04-14 10:35:00,297 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:35:12,144 WARNING django.request Not Found: /favicon.ico
+2026-04-14 10:36:16,057 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=2.56s
+2026-04-14 10:39:42,484 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=1.52s
+2026-04-14 10:39:56,216 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=2.04s
+2026-04-14 10:40:10,593 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=1.75s
+2026-04-14 10:40:30,804 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=1.94s
+2026-04-14 10:40:39,825 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=1.55s
+2026-04-14 10:53:11,822 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 10:53:12,026 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:53:15,067 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 10:53:15,243 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 10:53:39,909 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=2.68s
+2026-04-14 10:53:49,842 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=1.62s
+2026-04-14 10:53:57,495 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=1.63s
+2026-04-14 10:54:10,500 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=1.68s
+2026-04-14 10:54:17,953 INFO chat.views chat_api session=woznuelq8vpaa6vrtbuo0og3zzsor4rf elapsed=1.67s
+2026-04-14 11:00:19,932 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 11:00:20,138 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 11:00:22,272 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 11:00:22,608 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 11:00:51,649 ERROR chat.views Error general en chat_api: (1048, "Column 'respuesta' cannot be null")
+Traceback (most recent call last):
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+    ~~~~~~~~^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/MySQLdb/connections.py", line 265, in query
+    _mysql.connection.query(self, query)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+MySQLdb.IntegrityError: (1048, "Column 'respuesta' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/views.py", line 58, in chat_api
+    Conversacion.objects.create(session_id=session_id, pregunta=mensaje, respuesta=respuesta)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/query.py", line 679, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/base.py", line 892, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/base.py", line 998, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/base.py", line 1161, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/base.py", line 1202, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/models/sql/compiler.py", line 1836, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/django/db/backends/mysql/base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+    ~~~~~~~~^^^
+  File "/ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/venv/lib64/python3.13/site-packages/MySQLdb/connections.py", line 265, in query
+    _mysql.connection.query(self, query)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+django.db.utils.IntegrityError: (1048, "Column 'respuesta' cannot be null")
+2026-04-14 11:00:51,657 ERROR django.request Internal Server Error: /api/chat/
+2026-04-14 11:01:10,070 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 11:01:10,255 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 11:01:12,381 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 11:01:12,697 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 11:03:35,561 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 11:03:48,200 WARNING django.request Not Found: /favicon.ico
+2026-04-14 11:04:12,099 INFO chat.views chat_api session=f1iabnqtvn1by4bdiiul2kdbhsk2l1wh elapsed=2.93s
+2026-04-14 11:04:30,315 INFO chat.views chat_api session=f1iabnqtvn1by4bdiiul2kdbhsk2l1wh elapsed=1.68s
+2026-04-14 11:09:05,828 INFO django.utils.autoreload /ChatbotOllama/ChatbotAIOllama/ChatbotAIOllama/chat/services/ollama_service.py changed, reloading.
+2026-04-14 11:09:06,080 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 11:09:35,103 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-04-14 11:09:56,967 INFO chat.views chat_api session=f1iabnqtvn1by4bdiiul2kdbhsk2l1wh elapsed=3.01s
+2026-04-14 11:10:06,060 INFO chat.views chat_api session=f1iabnqtvn1by4bdiiul2kdbhsk2l1wh elapsed=1.68s

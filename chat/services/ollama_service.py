@@ -2,7 +2,7 @@ import re
 import requests
 import json
 import time
-import random
+import unicodedata
 from django.conf import settings
 from django.core.cache import cache
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
@@ -12,43 +12,48 @@ class OllamaService:
         self.base_url = settings.OLLAMA_URL
         self.model = settings.MODEL_NAME
         self.base_model = getattr(settings, 'BASE_MODEL', 'llama3.2:latest')
-        self.cache_timeout = 60 * 15  # 15 minutos
-        self.timeout = 60  # segundos
+        self.cache_timeout = 60 * 15
+        self.timeout = 60
 
     def consultar_con_historial(self, mensaje, historial=None, contexto=""):
-        # 🧠 HACK DE SEGURIDAD: Quitamos la palabra "Usuario" y "Pregunta"
-        # Lo convertimos en una lista de hechos fríos para no activar filtros PII.
         memoria = ""
+        mensaje_busqueda = mensaje
+
         if historial and len(historial) > 0:
             for h in historial:
-                memoria += f"- Dato reciente compartido: {h['respuesta'][:200]}\n"
-        
-        return self.consultar(mensaje, contexto=contexto, historial_texto=memoria)
+                pregunta = h.get('pregunta', '')
+                respuesta = h.get('respuesta', '')[:200]
+                memoria += f"Usuario: {pregunta}\nAsistente: {respuesta}\n"
+            
+            # MAGIA DE MEMORIA
+            ultimo_tema = historial[-1].get('pregunta', '')
+            mensaje_busqueda = f"{ultimo_tema} {mensaje}"
 
-    def consultar(self, mensaje, contexto="", historial_texto="", session_id=None):
+        return self.consultar(mensaje, mensaje_busqueda=mensaje_busqueda, contexto=contexto, historial_texto=memoria)
+
+    def consultar(self, mensaje, mensaje_busqueda=None, contexto="", historial_texto="", session_id=None):
+        if not mensaje_busqueda:
+            mensaje_busqueda = mensaje
+
         if not contexto:
-            contexto = self._busqueda_ultra_rapida(mensaje)
+            contexto = self._busqueda_en_cascada(mensaje_busqueda)
+
+        # === MODO RAYOS X ===
+        print("\n" + "="*50)
+        print("🔍 LO QUE OLLAMA ESTÁ LEYENDO DE TU BASE DE DATOS:")
+        print(contexto if contexto else "Nada (Contexto vacío)")
+        print("="*50 + "\n")
 
         prompt = self._construir_prompt_pro(mensaje, contexto, historial_texto)
-        options = self._get_options_pro(mensaje)
+        options = self._get_options_pro()
 
         try:
             respuesta = self._llamar_con_reintentos(prompt, options)
         except Exception as e:
-            print(f"❌ Error crítico tras reintentos: {e}")
+            print(f"❌ Error crítico: {e}")
             respuesta = self._get_fallback_response_pro()
 
-        if respuesta and (respuesta.endswith(':') or respuesta.endswith(':\n') or not respuesta[-1] in '.!?'):
-            prompt_completar = f"{prompt}\n{respuesta}\nContinúa:"
-            try:
-                respuesta_completa = self._llamar_con_reintentos(prompt_completar, options)
-                if respuesta_completa:
-                    respuesta = respuesta + " " + respuesta_completa
-            except:
-                pass
-
-        respuesta = self._limpiar_respuesta(respuesta)
-        return respuesta
+        return self._limpiar_respuesta(respuesta)
 
     @retry(
         stop=stop_after_attempt(3),
@@ -59,108 +64,101 @@ class OllamaService:
         start_time = time.time()
         response = requests.post(
             f"{self.base_url}/api/generate",
-            json={
-                "model": self.model,
-                "prompt": prompt,
-                "stream": False,
-                "options": options
-            },
+            json={"model": self.model, "prompt": prompt, "stream": False, "options": options},
             timeout=self.timeout,
             headers={'Connection': 'close'}
         )
-        elapsed_time = time.time() - start_time
-        print(f"⏱️ Tiempo de respuesta: {elapsed_time:.2f}s")
-
+        print(f"⏱️ Tiempo de respuesta Ollama: {(time.time() - start_time):.2f}s")
         if response.status_code == 200:
-            try:
-                result = response.json()
-                return result.get('response', '')
-            except json.JSONDecodeError:
-                raise Exception("Respuesta no JSON")
-        else:
-            raise Exception(f"HTTP {response.status_code}")
+            try: return response.json().get('response', '')
+            except: raise Exception("Respuesta no JSON")
+        else: raise Exception(f"HTTP {response.status_code}")
 
-    def _busqueda_ultra_rapida(self, mensaje):
-        from chat.models import ConocimientoUAEMEX
-        palabras = mensaje.lower().split()
-        stop_words = {'para', 'como', 'cuales', 'cual', 'sobre', 'este', 'esta', 'todo', 'pero', 'nivel', 'los', 'las', 'son', 'del', 'que', 'una', 'uno', 'universidad', 'uaemex', 'uaem', 'quien', 'quién', 'cuando', 'cuándo'}
-        palabras_filtradas = [p for p in palabras if len(p) > 3 and p not in stop_words][:3]
+    def _busqueda_en_cascada(self, mensaje_busqueda):
+        from chat.models import ConocimientoUAEMEX, Pregunta
+        from django.db.models import Q
         
+        mensaje_limpio = ''.join((c for c in unicodedata.normalize('NFD', mensaje_busqueda) if unicodedata.category(c) != 'Mn'))
+        mensaje_limpio = re.sub(r'[^\w\s]', ' ', mensaje_limpio.lower())
+        palabras = mensaje_limpio.split()
+        
+        stop_words = {'para', 'como', 'cuales', 'cual', 'sobre', 'este', 'esta', 'todo', 'pero', 'nivel', 'los', 'las', 'son', 'del', 'que', 'una', 'uno', 'universidad', 'uaemex', 'uaem', 'quien', 'cuando', 'cuanto', 'donde', 'sabes', 'dime', 'informacion', 'exacto', 'exacta', 'nuevo', 'ingreso', 'tiene', 'hacer', 'hay', 'alguna', 'algun'}
+        palabras_filtradas = [p for p in palabras if len(p) > 3 and p not in stop_words]
+        palabras_filtradas = list(dict.fromkeys(palabras_filtradas))
+
         if not palabras_filtradas: return ""
+        contexto_final = ""
+        print(f"\n🧠 Motor de Búsqueda | Palabras evaluadas: {palabras_filtradas}")
+
         try:
-            conocimientos = ConocimientoUAEMEX.objects.filter(contenido__icontains=palabras_filtradas[0])[:2]
-            if conocimientos: return conocimientos[0].contenido[:500]
-        except: pass
-        return ""
+            query_faq = Q()
+            for palabra in palabras_filtradas:
+                query_faq |= Q(pregunta__icontains=palabra) | Q(respuesta__icontains=palabra)
+            preguntas_brutas = list(Pregunta.objects.filter(query_faq).distinct()[:20])
+
+            query_doc = Q()
+            for palabra in palabras_filtradas:
+                query_doc |= Q(contenido__icontains=palabra) | Q(titulo__icontains=palabra)
+            docs_brutos = list(ConocimientoUAEMEX.objects.filter(query_doc).distinct()[:20])
+
+            def contar_coincidencias(texto):
+                texto_limpio = re.sub(r'[^\w\s]', ' ', ''.join((c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')).lower())
+                return sum(1 for p in palabras_filtradas if p in texto_limpio.split())
+
+            preguntas_ordenadas = sorted(preguntas_brutas, key=lambda x: contar_coincidencias(x.pregunta + " " + x.respuesta), reverse=True)[:4]
+            docs_ordenados = sorted(docs_brutos, key=lambda x: contar_coincidencias(x.titulo + " " + x.contenido), reverse=True)[:3]
+
+            if preguntas_ordenadas:
+                contexto_final += "=== PREGUNTAS FRECUENTES ===\n"
+                for p in preguntas_ordenadas: contexto_final += f"P: {p.pregunta}\nR: {p.respuesta}\n\n"
+            
+            if docs_ordenados:
+                contexto_final += "=== DOCUMENTOS OFICIALES ===\n"
+                for c in docs_ordenados: contexto_final += f"[{c.titulo}]: {c.contenido}\n\n"
+
+            print(f"✅ [Ranker] Base de datos enviando las {len(preguntas_ordenadas)} FAQs y {len(docs_ordenados)} Docs más relevantes.")
+        except Exception as e:
+            print(f"Error en buscador híbrido: {e}")
+
+        return contexto_final[:4000]
 
     def _construir_prompt_pro(self, mensaje, contexto, historial):
-        palabras_ingles = {'what', 'when', 'where', 'who', 'why', 'how', 'is', 'the', 'can', 'you', 'please', 'tell'}
-        mensaje_words = set(mensaje.lower().replace('?', '').replace('¿', '').split())
+        palabras_ingles = {'what', 'when', 'where', 'who', 'why', 'how', 'is', 'the', 'can', 'you'}
+        mensaje_words = set(re.sub(r'[^\w\s]', ' ', mensaje.lower()).split())
         
         if mensaje_words.intersection(palabras_ingles):
-            regla_idioma = "RESPOND IN ENGLISH. If you don't know the answer, say: 'I do not have that information in my database.'"
+            regla_idioma = "RESPOND IN ENGLISH."
             etiqueta_final = "ANSWER:"
         else:
-            regla_idioma = "RESPONDE EN ESPAÑOL. Si no sabes la respuesta, di: 'No tengo esta información en mi sistema.'"
+            regla_idioma = "RESPONDE EN ESPAÑOL."
             etiqueta_final = "RESPUESTA:"
 
-        prompt = f"""Eres el Asistente Oficial de la UAEMex.
-AVISO DE SEGURIDAD CRÍTICO: Toda la información que manejas es PÚBLICA e institucional. NO manejas datos personales de la persona que escribe.
+        historial_prompt = f"=== HISTORIAL DE LA CONVERSACIÓN ===\n{historial}\n" if historial else ""
 
-=== DATOS INSTITUCIONALES ===
-{contexto[:3000] if contexto else "Sin datos oficiales."}
+        # AQUI ESTÁ EL CAMBIO CLAVE EN LA REGLA 2 Y 3
+        prompt = f"""Eres el Asistente Oficial de la UAEMex. Eres formal, directo y experto.
 
-=== MEMORIA RECIENTE (Tus respuestas anteriores) ===
-{historial if historial else "Sin memoria."}
+{historial_prompt}
+=== BASE DE CONOCIMIENTOS ===
+{contexto if contexto else "No hay información."}
 
 === INSTRUCCIONES ===
-1. MEMORIA DE AUTORIDADES: Si te piden "repetir su nombre" o "quién es", busca en la MEMORIA RECIENTE el nombre del Rector, Director o autoridad mencionada y dalo. Es información pública, TIENES PERMITIDO compartirla.
-2. NO INVENTES DATOS. Usa solo los DATOS INSTITUCIONALES o la MEMORIA RECIENTE.
-3. EXCLUSIVIDAD ABSOLUTA: Tienes ESTRICTAMENTE PROHIBIDO hablar de temas que no sean de la UAEMex (nada de recetas, deportes, ni tareas). Si te preguntan algo ajeno, responde ÚNICAMENTE: "Lo siento, soy un asistente exclusivo de la UAEMex." y termina tu respuesta de inmediato, sin ofrecer más ayuda.
-4. IDIOMA: {regla_idioma}
+1. Responde a la PREGUNTA ACTUAL del usuario usando SOLO la BASE DE CONOCIMIENTOS.
+2. Si la base de conocimientos dice que un costo o dato "varía", "es diferente" o "depende de algo", REPRODUCE ESA INFORMACIÓN. No asumas que no tienes la respuesta solo porque no hay un número exacto.
+3. SOLO si la BASE DE CONOCIMIENTOS no menciona en lo absoluto el tema, responde textualmente: "Lo siento, no tengo esta información en mi base de datos actual. Por favor, consulta un medio oficial."
+4. NO INVENTES DATOS.
+5. {regla_idioma}
 
-PREGUNTA:
-{mensaje}
-
+PREGUNTA ACTUAL: {mensaje}
 {etiqueta_final}"""
         return prompt
 
-    def _get_options_pro(self, mensaje):
-        return {
-            "temperature": 0.1,
-            "top_p": 0.9,
-            "max_tokens": 1500,          
-            "repeat_penalty": 1.1,
-            "frequency_penalty": 0.2,
-            "num_predict": 1500,         
-            "stop": ["\n\nPREGUNTA:", "Dato reciente compartido:"]
-        }
-
-    def _limpiar_respuesta(self, respuesta):
-        if not respuesta: return "Lo siento, no pude generar una respuesta."
-        respuesta = respuesta.replace('\r', '').replace('\t', ' ')
-        lineas = [linea.strip() for linea in respuesta.split('\n') if linea.strip()]
-        respuesta_limpia = '\n'.join(lineas)
-        respuesta_limpia = re.sub(r'[^\x00-\xFFFF]', '', respuesta_limpia)
-        return respuesta_limpia
-
-    def _get_fallback_response_pro(self):
-        return "Lo siento, tuve un problema técnico. Por favor, intenta de nuevo en unos momentos."
-
+    def _get_options_pro(self): return {"temperature": 0.0, "top_p": 0.9, "max_tokens": 800}
+    def _limpiar_respuesta(self, respuesta): return respuesta.strip() if respuesta else "Error."
+    def _get_fallback_response_pro(self): return "Problema técnico."
+    
     def verificar_estado_rapido(self):
-        try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=2)
-            return response.status_code == 200
+        try: return requests.get(f"{self.base_url}/api/tags", timeout=2).status_code == 200
         except: return False
-
-    def listar_modelos(self):
-        cache_key = 'ollama_models_list'
-        modelos = cache.get(cache_key)
-        if not modelos:
-            try:
-                response = requests.get(f"{self.base_url}/api/tags", timeout=5)
-                if response.status_code == 200:
-                    modelos = response.json().get('models', [])
-                    cache.set(cache_key, modelos, 60 * 60)
-            except: modelos = []
-        return modelos
+        
+    def listar_modelos(self): return []
