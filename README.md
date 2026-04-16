@@ -154,3 +154,4 @@ Comportamiento para cronjob:
 
 - Si no hay cambios reales en contenido, el pipeline no actualiza modelo.
 - Para detectar cambios, compara conteos y última `fecha_actualizacion` de conocimiento.
+# ChatbotLocal

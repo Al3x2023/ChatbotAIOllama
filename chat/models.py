@@ -81,3 +81,82 @@ class Pregunta(models.Model):
         
     def __str__(self):
         return self.pregunta[:50]
+
+# models.py - Añade al final del archivo
+
+class MemoriaUsuario(models.Model):
+    """Memoria persistente del usuario a través de múltiples sesiones"""
+    user_id = models.CharField(max_length=100, db_index=True, unique=True, help_text="Identificador único del usuario (email o username)")
+    nombre = models.CharField(max_length=200, blank=True)
+    nivel_educativo = models.CharField(max_length=100, blank=True, choices=[
+        ('licenciatura', 'Licenciatura'),
+        ('posgrado', 'Posgrado'),
+        ('preparatoria', 'Preparatoria'),
+        ('otro', 'Otro'),
+    ])
+    intereses = models.JSONField(default=list, help_text="Carreras o temas de interés")
+    preferencias = models.JSONField(default=dict, help_text="Preferencias del usuario")
+    resumen_conversaciones = models.TextField(blank=True, help_text="Resumen comprimido de conversaciones")
+    total_interacciones = models.IntegerField(default=0)
+    ultima_interaccion = models.DateTimeField(auto_now=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    activo = models.BooleanField(default=True)
+    
+    class Meta:
+        db_table = 'memoria_usuarios'
+        indexes = [
+            models.Index(fields=['user_id']),
+            models.Index(fields=['ultima_interaccion']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user_id} - {self.total_interacciones} interacciones"
+
+class MemoriaContexto(models.Model):
+    """Contexto de conversación para mantener el hilo"""
+    session_id = models.CharField(max_length=100, db_index=True)
+    user_id = models.CharField(max_length=100, db_index=True, null=True)
+    resumen_contexto = models.TextField()
+    ultimo_tema = models.CharField(max_length=200, blank=True)
+    entidades_mencionadas = models.JSONField(default=list, help_text="Entidades importantes mencionadas")
+    timestamp = models.DateTimeField(auto_now_add=True)
+    expira_en = models.DateTimeField()
+    
+    class Meta:
+        db_table = 'memoria_contextos'
+        indexes = [
+            models.Index(fields=['session_id', 'timestamp']),
+            models.Index(fields=['expira_en']),
+        ]
+    
+    @classmethod
+    def limpiar_expirados(cls):
+        """Limpia contextos expirados"""
+        cls.objects.filter(expira_en__lt=timezone.now()).delete()
+
+class ResumenConversacion(models.Model):
+    """Resúmenes periódicos de conversaciones"""
+    session_id = models.CharField(max_length=100, db_index=True)
+    user_id = models.CharField(max_length=100, db_index=True, null=True)
+    resumen = models.TextField()
+    temas_principales = models.JSONField(default=list)
+    preguntas_clave = models.JSONField(default=list)
+    fecha_inicio = models.DateTimeField()
+    fecha_fin = models.DateTimeField()
+    importancia = models.FloatField(default=1.0)
+    
+    class Meta:
+        db_table = 'resumen_conversaciones'
+        ordering = ['-importancia', '-fecha_fin']
+        indexes = [
+            models.Index(fields=['session_id', 'fecha_fin']),
+        ]
+
+class PalabraClave(models.Model):
+    """Palabras clave para búsqueda semántica rápida"""
+    palabra = models.CharField(max_length=100, unique=True, db_index=True)
+    frecuencia = models.IntegerField(default=1)
+    temas_relacionados = models.JSONField(default=list)
+    
+    class Meta:
+        db_table = 'palabras_clave'

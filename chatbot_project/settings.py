@@ -107,9 +107,18 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-OLLAMA_URL = os.getenv('OLLAMA_URL', 'http://127.0.0.1:11434')
-MODEL_NAME = os.getenv('MODEL_NAME', 'llama3.2:latest')
-BASE_MODEL = os.getenv('BASE_MODEL', 'llama3.2:latest')
+# ============ CAMBIOS PARA GROQ API ============
+# Reemplazar Ollama por Groq
+GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')  # ¡IMPORTANTE! Obtén tu API key de https://console.groq.com
+GROQ_MODEL = os.getenv('GROQ_MODEL', 'mixtral-8x7b-32768')  # o 'llama3-70b-8192', 'gemma2-9b-it', etc.
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+# Mantener por compatibilidad (si tu app usa OLLAMA_URL)
+OLLAMA_URL = GROQ_API_URL  # Redirigir a Groq
+MODEL_NAME = GROQ_MODEL
+BASE_MODEL = GROQ_MODEL
+# ==============================================
+
 UAEMEX_BASE_URL = os.getenv('UAEMEX_BASE_URL', 'https://www.uaemex.mx/')
 UAEMEX_PDF_URLS = env_list('UAEMEX_PDF_URLS', '')
 UAEMEX_SEED_URLS = env_list(
