@@ -1,1 +1,3 @@
 logs/chatbot.log
+.env
+.env.template
